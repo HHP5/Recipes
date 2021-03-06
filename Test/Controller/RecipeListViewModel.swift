@@ -86,8 +86,8 @@ class RecipeListViewModel: ViewModelType {
 
         let selectedRecipe = recipesForPrint[index]
         //Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
-        fetchedData.fetchData(for: selectedRecipe.uuid) { (recipe: OneRecipe) in
-            self.destinationVC.detailModel = DetailViewModel(recipe: recipe.recipe)
+        fetchedData.fetchData(for: selectedRecipe.uuid) { [weak self] (recipe: OneRecipe) in
+            self?.destinationVC.detailModel = DetailViewModel(recipe: recipe.recipe)
         }
 
     }
