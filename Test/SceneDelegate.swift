@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        window?.rootViewController = ViewController()
         window?.makeKeyAndVisible()
         
-        let navBar = UINavigationController(rootViewController: ViewController())
+        let navBar = UINavigationController(rootViewController: RecipeListViewController())
         window?.rootViewController = navBar
         
         

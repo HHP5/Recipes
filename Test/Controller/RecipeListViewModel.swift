@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class RecipeListViewModel: ViewModelType {
+class RecipeListViewModel: RecipeListViewModelType {
 
     var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
     var destinationVC = DetailViewController()
@@ -31,16 +31,16 @@ class RecipeListViewModel: ViewModelType {
     private var sortedArray = [RecipeStructure]()
 
     // Реализация сортировки
-    func sortArray(for condition: String) {
+    func sortArray(for condition: SortedBy) {
 
         let recipesForSort = recipesForPrint
         isSoarted = true
         switch condition {
-        case "Last Update ↓":
+        case .lastUpdateDescending:
             sortedArray = recipesForSort.sorted(by: { $0.lastUpdated > $1.lastUpdated })
-        case "Last Update ↑":
+        case .lastUpdateAscending:
             sortedArray = recipesForSort.sorted(by: { $0.lastUpdated < $1.lastUpdated })
-        case "Name":
+        case .name:
             sortedArray = recipesForSort.sorted(by: { $0.name < $1.name })
         default:
             print("Error in sorting")

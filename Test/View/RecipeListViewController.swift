@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class RecipeListViewController: UIViewController {
 
     private var searchBar = UISearchBar()
     private var tableView = UITableView()
@@ -76,16 +76,16 @@ class ViewController: UIViewController {
 
     @objc func handleShowSortItems() {
         let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
-        let sortByDateAscending = UIAlertAction(title: "Last Update ↓", style: .default) { [self] (action) in
-            viewModel.sortArray(for: "Last Update ↓")
+        let sortByDateAscending = UIAlertAction(title: SortedBy.lastUpdateDescending.rawValue, style: .default) { [self] (action) in
+            viewModel.sortArray(for: SortedBy.lastUpdateDescending)
             tableView.reloadData()
         }
-        let sortByDateDescending = UIAlertAction(title: "Last Update ↑", style: .default) { [self] (action) in
-            viewModel.sortArray(for: "Last Update ↑")
+        let sortByDateDescending = UIAlertAction(title: SortedBy.lastUpdateAscending.rawValue, style: .default) { [self] (action) in
+            viewModel.sortArray(for: SortedBy.lastUpdateAscending)
             tableView.reloadData()
         }
-        let sortByName = UIAlertAction(title: "Name", style: .default) { [self] (action) in
-            viewModel.sortArray(for: "Name")
+        let sortByName = UIAlertAction(title: SortedBy.name.rawValue, style: .default) { [self] (action) in
+            viewModel.sortArray(for: SortedBy.name)
             tableView.reloadData()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
@@ -113,7 +113,7 @@ class ViewController: UIViewController {
 }
 //MARK: - TableView DataSource and Delegate
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
@@ -138,7 +138,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension ViewController: UISearchBarDelegate {
+extension RecipeListViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 

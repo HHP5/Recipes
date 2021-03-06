@@ -8,14 +8,14 @@
 import Foundation
 import UIKit
 
-protocol ViewModelType{
+protocol RecipeListViewModelType{
     var destinationVC: DetailViewController {get set}
     
     var numberOfRow: Int {get}
     
     var recipesForPrint: [RecipeStructure] {get set}
     
-    func sortArray(for condition: String)
+    func sortArray(for condition: SortedBy)
     
     func searchBarSearchButtonClicked(for searchText: String)
     

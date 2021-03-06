@@ -16,43 +16,29 @@ class FetchingData {
         
         let stringURL = url == "/recipes.json" ? baseURL + url : baseURL + "/recipes/\(url)"
         guard let url = URL(string: stringURL) else { return }
-
-
+        
         Alamofire.request(url, method: .get).validate().responseData { (response) in
-
+            
             switch response.result{
             case .success(let data):
+                
                 do {
-               
-                                   let obj = try JSONDecoder().decode(T.self, from: data)
-                                   compelition(obj)
-               
-                               } catch {
-                                   print(error.localizedDescription)
-                               }
+                    
+                    let obj = try JSONDecoder().decode(T.self, from: data)
+                    compelition(obj)
+                    
+                } catch {
+                    print(error.localizedDescription)
+                }
+                
             case .failure(let error):
-                                print(error.localizedDescription)
-
+                print(error.localizedDescription)
+                
             }
-//            if response.error != nil {
-//
-//                print(response.error!.localizedDescription)
-//                return
-//
-//            } else {
-//                guard let data = response.result.value else { return }
-//                do {
-//
-//                    let obj = try JSONDecoder().decode(T.self, from: data)
-//                    compelition(obj)
-//
-//                } catch {
-//                    print(error.localizedDescription)
-//                }
-//            }
+            
         }
     }
-
+    
     
 }
 
