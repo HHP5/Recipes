@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class ViewModel: ViewModelType {
+class RecipeListViewModel: ViewModelType {
 
     var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
     var destinationVC = DetailViewController()
@@ -17,9 +17,9 @@ class ViewModel: ViewModelType {
     var recipesForPrint: [RecipeStructure] = []
 
     func fetchingData(compelition closure: @escaping() -> ()) {
-        fetchedData.fetchAllRecipes { [weak self] recipe in
-            self?.recipes = recipe
-            self?.recipesForPrint = recipe
+        fetchedData.fetchData { [weak self] (recipe: EntireRecipeList) in
+            self?.recipes = recipe.recipes
+            self?.recipesForPrint = recipe.recipes
             closure()
         }
     }
@@ -86,8 +86,9 @@ class ViewModel: ViewModelType {
 
         let selectedRecipe = recipesForPrint[index]
         //Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
-        fetchedData.fetchingRecipe(for: selectedRecipe.uuid) { (recipe) in
-            self.destinationVC.detailModel = DetailViewModel(recipe: recipe)
+        fetchedData.fetchData(for: selectedRecipe.uuid) { (recipe: OneRecipe) in
+            self.destinationVC.detailModel = DetailViewModel(recipe: recipe.recipe)
         }
+
     }
 }

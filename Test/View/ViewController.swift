@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     private var tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
 
-    private var viewModel = ViewModel()
+    private var viewModel = RecipeListViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()

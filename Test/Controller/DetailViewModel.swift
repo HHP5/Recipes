@@ -96,8 +96,8 @@ class DetailViewModel: DetailViewModelType {
                 let uuidSimilarRecipe = element.uuid
 
                 // Запрашивает и передает данные по выбранному рецепту
-                fetchingData.fetchingRecipe(for: uuidSimilarRecipe) { [self] (recipe) in
-                    destinationVC.detailModel = DetailViewModel(recipe: recipe)
+                fetchingData.fetchData(for: uuidSimilarRecipe) { [self] (recipe: OneRecipe) in
+                    destinationVC.detailModel = DetailViewModel(recipe: recipe.recipe)
                 }
             }
         }

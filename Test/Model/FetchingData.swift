@@ -9,13 +9,14 @@ import Foundation
 import Alamofire
 
 class FetchingData {
-
-    private var entireRecipeList: EntireRecipeList?
-    private var oneRecipe: OneRecipe?
-
-    func fetchAllRecipes(compelition: @escaping ([RecipeStructure]) -> ()) {
-        let stringURL = "https://test.kode-t.ru/recipes.json"
+    
+    let baseURL = "https://test.kode-t.ru"
+    
+    func fetchData<T: Decodable>(for url: String = "/recipes.json", compelition: @escaping (T) -> ()) {
+        
+        let stringURL = url == "/recipes.json" ? baseURL + url : baseURL + "/recipes/\(url)"
         guard let url = URL(string: stringURL) else { return }
+
 
         Alamofire.request(url, method: .get).responseData { (response) in
 
@@ -28,8 +29,8 @@ class FetchingData {
                 guard let data = response.result.value else { return }
                 do {
                     
-                    self.entireRecipeList = try JSONDecoder().decode(EntireRecipeList.self, from: data)
-                    compelition(self.entireRecipeList!.recipes)
+                    let obj = try JSONDecoder().decode(T.self, from: data)
+                    compelition(obj)
                     
                 } catch {
                     print(error.localizedDescription)
@@ -38,29 +39,6 @@ class FetchingData {
         }
     }
 
-    func fetchingRecipe(for uuid: String, compelition: @escaping (RecipeStructure) -> ()) {
-        let stringURL = "https://test.kode-t.ru/recipes/\(uuid)"
-        guard let url = URL(string: stringURL) else { return }
-
-        Alamofire.request(url, method: .get).responseData { (response) in
-
-            if response.error != nil {
-
-                print(response.error!.localizedDescription)
-                return
-
-            } else {
-                guard let data = response.result.value else { return }
-                do {
-                    
-                    self.oneRecipe = try JSONDecoder().decode(OneRecipe.self, from: data)
-                    compelition(self.oneRecipe!.recipe)
-
-                } catch {
-                    print(error.localizedDescription)
-                }
-            }
-        }
-    }
+    
 }
 
