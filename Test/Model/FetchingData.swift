@@ -10,12 +10,9 @@ import Alamofire
 
 class FetchingData {
     
-    let baseURL = "https://test.kode-t.ru"
-    
-    func fetchData<T: Decodable>(for url: String = "/recipes.json", compelition: @escaping (T) -> ()) {
+    func fetchData<T: Decodable>(for query: String = "/recipes.json", compelition: @escaping (T) -> ()) {
         
-        let stringURL = url == "/recipes.json" ? baseURL + url : baseURL + "/recipes/\(url)"
-        guard let url = URL(string: stringURL) else { return }
+        guard let url = getURL(for: query) else {return}
         
         Alamofire.request(url, method: .get).validate().responseData { (response) in
             
@@ -39,6 +36,13 @@ class FetchingData {
         }
     }
     
+    private let baseURL = "https://test.kode-t.ru"
+
+    private func getURL(for query: String) -> URL?{
+        
+        let stringURL = query == "/recipes.json" ? baseURL + query : baseURL + "/recipes/\(query)"
+        return URL(string: stringURL)
+    }
     
 }
 
