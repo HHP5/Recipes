@@ -13,7 +13,7 @@ class CollectionCellModel: CollectionCellModelType {
     var imageURLString: String
     var images: [String]
 
-    var url: URL {
+    var imageURL: URL {
         let url = URL(string: imageURLString)
         return url!
     }

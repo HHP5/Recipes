@@ -20,18 +20,14 @@ protocol DetailViewModelType: class{
     var instruction: String {get}
     
     var images: [String] {get}
-        
-    var destinationVC: DetailViewController {get}
-    
+            
     var numberOfButtons: Int? {get set}
         
     var similarLabel: String {get}
-    
-    var titleForNavigationItem: String {get}
-    
+        
     func setSimilarButtons(closure: @escaping ()->())
     
-    func similarRecipePressed(for index: Int)
+    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType)->())
     
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType?
     

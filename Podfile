@@ -6,6 +6,6 @@ target 'Recipes' do
   use_frameworks!
 
   # Pods for Test
-pod 'Alamofire', '~> 4.4'
+  pod 'Kingfisher', '~> 6.0'
 
 end

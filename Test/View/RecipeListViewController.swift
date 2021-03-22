@@ -23,6 +23,11 @@ class RecipeListViewController: UIViewController {
         setNavBar()
         setActivityIndicator()
 
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         viewModel.fetchingData {
             DispatchQueue.main.async { [self] in
                 setTableView()
@@ -76,16 +81,16 @@ class RecipeListViewController: UIViewController {
 
     @objc func handleShowSortItems() {
         let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
-        let sortByDateAscending = UIAlertAction(title: SortedBy.lastUpdateDescending.rawValue, style: .default) { [self] (action) in
-            viewModel.sortArray(for: SortedBy.lastUpdateDescending)
+        let sortByDateAscending = UIAlertAction(title: RecipesSortedBy.lastUpdateDescending.rawValue, style: .default) { [self] (action) in
+            viewModel.sortArray(by: .lastUpdateDescending)
             tableView.reloadData()
         }
-        let sortByDateDescending = UIAlertAction(title: SortedBy.lastUpdateAscending.rawValue, style: .default) { [self] (action) in
-            viewModel.sortArray(for: SortedBy.lastUpdateAscending)
+        let sortByDateDescending = UIAlertAction(title: RecipesSortedBy.lastUpdateAscending.rawValue, style: .default) { [self] (action) in
+            viewModel.sortArray(by: .lastUpdateAscending)
             tableView.reloadData()
         }
-        let sortByName = UIAlertAction(title: SortedBy.name.rawValue, style: .default) { [self] (action) in
-            viewModel.sortArray(for: SortedBy.name)
+        let sortByName = UIAlertAction(title: RecipesSortedBy.name.rawValue, style: .default) { [self] (action) in
+            viewModel.sortArray(by: .name)
             tableView.reloadData()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
@@ -132,9 +137,13 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        viewModel.didSelectRow(at: indexPath.row)
-        tableView.deselectRow(at: indexPath, animated: true)
-        navigationController?.pushViewController(viewModel.destinationVC, animated: true)
+        let destinationVC = DetailViewController()
+        
+        viewModel.didSelectRow(at: indexPath.row) { [weak self] (recipe) in
+            destinationVC.detailModel = recipe
+            tableView.deselectRow(at: indexPath, animated: true)
+            self?.navigationController?.pushViewController(destinationVC, animated: true)
+        }
     }
 }
 

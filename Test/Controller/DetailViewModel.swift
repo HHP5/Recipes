@@ -10,8 +10,6 @@ import UIKit
 
 class DetailViewModel: DetailViewModelType {
 
-    var destinationVC = DetailViewController()
-
     var recipe: RecipeStructure
 
     init(recipe: RecipeStructure) {
@@ -33,7 +31,9 @@ class DetailViewModel: DetailViewModelType {
 
     var difficulty: String {
         // Отображение сложности рецепта как закрашенных звезд из 5
-        let difficutlyStars = String(repeating: "\u{2605}", count: recipe.difficulty) + String(repeating: "\u{2606}", count: 5 - recipe.difficulty)
+        let unicodeWhiteStar = "\u{2606}"
+        let unicodeBlackStar = "\u{2605}"
+        let difficutlyStars = String(repeating: unicodeBlackStar, count: recipe.difficulty) + String(repeating: unicodeWhiteStar, count: 5 - recipe.difficulty)
         return "Difficulty: \(difficutlyStars)"
     }
 
@@ -67,37 +67,32 @@ class DetailViewModel: DetailViewModelType {
         return resultLabel
     }
 
-    var titleForNavigationItem: String { //Нашла некоторые подходящие unicode scalar для рецептов
-        var symbol = "\u{1F372}"
-        switch recipe.name {
-        case "Tomato Puff Pastry Bites":
-            symbol = "\u{1F345}"
-        case "Minted Orzo with Tomatoes":
-            symbol = "\u{1F35A}"
-        case "Ham or Sausage Quiche":
-            symbol = "\u{1F967}"
-        case "Pan Roasted Chicken with Lemon, Garlic, Green Beans and Red Potatoes":
-            symbol = "\u{1F357}"
-        default:
-            symbol = "\u{1F372}"
-        }
-        return "R E C I P E " + symbol
-    }
-
-
-    func similarRecipePressed(for index: Int) {
+    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType)->()) {
 
         let fetchingData = FetchingData()
-        guard let nameSimilarRecipe = similarRecipes?[index].name,
-            let similarRecipe = similarRecipes else { return }
+        guard let similarRecipe = similarRecipes,
+              let selectedRecipe = similarRecipes?[index].name else { return }
 
-        similarRecipe.forEach { (element) in
-            if element.name == nameSimilarRecipe {
-                let uuidSimilarRecipe = element.uuid
+        similarRecipe.forEach { (recipe) in
+            if recipe.name == selectedRecipe {
+                let selectedRecipeUUID = recipe.uuid
 
                 // Запрашивает и передает данные по выбранному рецепту
-                fetchingData.fetchData(for: uuidSimilarRecipe) { [self] (recipe: OneRecipe) in
-                    destinationVC.detailModel = DetailViewModel(recipe: recipe.recipe)
+
+                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<OneRecipe, NetworkingError>) in
+//                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<OneRecipe, NSError>) in
+
+                    switch result{
+                    
+                    case.success(let recipe):
+                        
+                        completion(DetailViewModel(recipe: recipe.recipe))
+                        
+                    case .failure(let error):
+                        
+                        print(error.rawValue)
+                        
+                    }
                 }
             }
         }

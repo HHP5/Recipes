@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class CollectionViewCell: UICollectionViewCell {
 
@@ -14,19 +15,22 @@ class CollectionViewCell: UICollectionViewCell {
     var cellModel: CollectionCellModelType? {
         willSet(cellModel) {
 
-            guard let url = cellModel?.url,
+            guard let imageURL = cellModel?.imageURL,
                 let currentImage = cellModel?.currentImage,
                 let totalCountImages = cellModel?.totalNumberImages
                 else { return }
-            imageFood.loadImageWithUrl(url)
+            
+            imageFood.kf.indicatorType = .activity
+            imageFood.kf.setImage(with: imageURL)
+            
             countImageLabel.isHidden = totalCountImages > 1 ? false : true
             countImageLabel.text = "\(currentImage) / \(totalCountImages)"
         }
     }
     //MARK: - UI Elements
 
-    private var imageFood: ImageLoader = {
-        let image = ImageLoader()
+    private var imageFood: UIImageView = {
+        let image = UIImageView()
         image.contentMode = .scaleAspectFit
         return image
     }()

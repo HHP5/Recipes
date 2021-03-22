@@ -9,18 +9,30 @@ import Foundation
 import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
+   
 
-    var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
-    var destinationVC = DetailViewController()
+    private var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
+//    var destinationVC = DetailViewController()
     private var fetchedData = FetchingData()
     private var recipes: [RecipeStructure]?
     var recipesForPrint: [RecipeStructure] = []
 
     func fetchingData(compelition closure: @escaping() -> ()) {
-        fetchedData.fetchData { [weak self] (recipe: EntireRecipeList) in
-            self?.recipes = recipe.recipes
-            self?.recipesForPrint = recipe.recipes
-            closure()
+    
+        fetchedData.fetchData { [weak self] (result: Result<EntireRecipeList, NetworkingError>) in
+//        fetchedData.fetchData { [weak self] (result: Result<EntireRecipeList, NSError>) in
+            switch result{
+            
+            case .success(let recipes):
+                self?.recipes = recipes.recipes
+                self?.recipesForPrint = recipes.recipes
+                closure()
+                
+            case .failure(let error):
+                
+                print(error.errorDescription?.description)
+                
+            }
         }
     }
 
@@ -31,19 +43,18 @@ class RecipeListViewModel: RecipeListViewModelType {
     private var sortedArray = [RecipeStructure]()
 
     // Реализация сортировки
-    func sortArray(for condition: SortedBy) {
+    func sortArray(by attribute: RecipesSortedBy){
 
         let recipesForSort = recipesForPrint
         isSoarted = true
-        switch condition {
-        case .lastUpdateDescending:
-            sortedArray = recipesForSort.sorted(by: { $0.lastUpdated > $1.lastUpdated })
+        
+        switch attribute {
         case .lastUpdateAscending:
+            sortedArray = recipesForSort.sorted(by: { $0.lastUpdated > $1.lastUpdated })
+        case .lastUpdateDescending:
             sortedArray = recipesForSort.sorted(by: { $0.lastUpdated < $1.lastUpdated })
         case .name:
             sortedArray = recipesForSort.sorted(by: { $0.name < $1.name })
-        default:
-            print("Error in sorting")
         }
         recipesForPrint = sortedArray //Выводит на экран отсортированный массив
     }
@@ -82,13 +93,22 @@ class RecipeListViewModel: RecipeListViewModelType {
         return TableCellModel(recipe: recipe)
     }
 
-    func didSelectRow(at index: Int) {
-
+    func didSelectRow(at index: Int, completion: @escaping (DetailViewModelType)->()) {
         let selectedRecipe = recipesForPrint[index]
-        //Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
-        fetchedData.fetchData(for: selectedRecipe.uuid) { [weak self] (recipe: OneRecipe) in
-            self?.destinationVC.detailModel = DetailViewModel(recipe: recipe.recipe)
-        }
+//        Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
+        fetchedData.fetchData(for: selectedRecipe.uuid) {(result: Result<OneRecipe, NetworkingError>) in
+//        fetchedData.fetchData(for: selectedRecipe.uuid) {(result: Result<OneRecipe, NSError>) in
 
+            switch result{
+            
+            case.success(let recipe):
+                
+                completion(DetailViewModel(recipe: recipe.recipe))
+                
+            case .failure(let error):
+                
+                print(error.localizedDescription)
+            }
+        }
     }
 }

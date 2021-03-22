@@ -13,8 +13,6 @@ class DetailViewController: UIViewController {
         willSet(detailModel) {
             guard let detailModel = detailModel else { return }
 
-            navigationItem.title = detailModel.titleForNavigationItem
-
             nameLabel.text = detailModel.name
             descriptionLabel.text = detailModel.description
             instructionLabel.text = "Instruction: \n"
@@ -45,6 +43,8 @@ class DetailViewController: UIViewController {
 
         buttonFieldView.dataSource = self
         buttonFieldView.delegate = self
+
+        navigationItem.title = "R E C I P E"
 
     }
 
@@ -170,10 +170,14 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
+        let destinationVC = DetailViewController()
+        
         guard let detailModel = detailModel else { return }
-        detailModel.similarRecipePressed(for: indexPath.row)
-        navigationController?.pushViewController(detailModel.destinationVC, animated: true)
-        buttonFieldView.deselectRow(at: indexPath, animated: true)
+        detailModel.similarRecipePressed(for: indexPath.row) { [weak self] (recipe) in
+            destinationVC.detailModel = recipe
+            self?.navigationController?.pushViewController(destinationVC, animated: true)
+            self?.buttonFieldView.deselectRow(at: indexPath, animated: true)
+        }
     }
 
 }

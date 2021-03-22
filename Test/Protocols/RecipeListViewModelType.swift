@@ -9,21 +9,20 @@ import Foundation
 import UIKit
 
 protocol RecipeListViewModelType{
-    var destinationVC: DetailViewController {get set}
     
     var numberOfRow: Int {get}
     
     var recipesForPrint: [RecipeStructure] {get set}
-    
-    func sortArray(for condition: SortedBy)
-    
+
+    func sortArray(by attribute: RecipesSortedBy)
+
     func searchBarSearchButtonClicked(for searchText: String)
     
     func searchBarCancelButtonClicked()
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> TableCellModelType?
     
-    func didSelectRow(at index: Int)
+    func didSelectRow(at index: Int, completion: @escaping (DetailViewModelType)->())
     
     func fetchingData(compelition: @escaping ()->())
 }

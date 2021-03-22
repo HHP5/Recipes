@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class TableViewCell: UITableViewCell {
 
@@ -17,7 +18,9 @@ class TableViewCell: UITableViewCell {
 
             nameLabel.text = cellModel.name
             descriptionLabel.text = cellModel.description
-            imageFood.loadImageWithUrl(cellModel.imageURL)
+
+            imageFood.kf.indicatorType = .activity
+            imageFood.kf.setImage(with: cellModel.imageURL)
         }
     }
     //MARK: - UI Elements
@@ -39,10 +42,11 @@ class TableViewCell: UITableViewCell {
         return label
     }()
 
-    private let imageFood: ImageLoader = {
-        let image = ImageLoader()
+    private let imageFood: UIImageView = {
+        let image = UIImageView()
         image.contentMode = .scaleAspectFit
         return image
+        
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
