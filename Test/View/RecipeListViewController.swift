@@ -74,7 +74,7 @@ class RecipeListViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(handleShowSearchBar))
         navigationItem.rightBarButtonItem?.tintColor = .black
         // Кнопка сортировки
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(handleShowSortItems))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), style: .done, target: self, action: #selector(handleShowSortItems))
         navigationItem.leftBarButtonItem?.tintColor = .black
 
     }
