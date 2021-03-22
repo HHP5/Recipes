@@ -30,7 +30,7 @@ class RecipeListViewModel: RecipeListViewModelType {
                 
             case .failure(let error):
                 
-                print(error.errorDescription?.description)
+                print(error.errorDescription as Any)
                 
             }
         }
