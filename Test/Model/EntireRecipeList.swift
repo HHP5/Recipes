@@ -7,15 +7,7 @@
 
 import Foundation
 
-struct EntireRecipeList: Codable {
-    let recipes: [RecipeStructure]
-}
-
-struct OneRecipe: Codable {
-    let recipe: RecipeStructure
-}
-
-struct RecipeStructure: Codable {
+struct Recipe: Codable {
     var uuid: String
     var name: String
     var images: [String]

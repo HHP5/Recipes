@@ -10,7 +10,7 @@ import UIKit
 
 class TableCellModel: TableCellModelType {
 
-    private var recipe: RecipeStructure
+    private var recipe: Recipe
 
     var name: String {
         return recipe.name
@@ -28,7 +28,7 @@ class TableCellModel: TableCellModelType {
         return URL(string: recipe.images[0])!
     }
 
-    init(recipe: RecipeStructure) {
+    init(recipe: Recipe) {
         self.recipe = recipe
     }
 

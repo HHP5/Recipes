@@ -10,9 +10,10 @@ import UIKit
 
 class DetailViewModel: DetailViewModelType {
 
-    var recipe: RecipeStructure
 
-    init(recipe: RecipeStructure) {
+    var recipe: Recipe
+
+    init(recipe: Recipe) {
         self.recipe = recipe
     }
 
@@ -79,25 +80,28 @@ class DetailViewModel: DetailViewModelType {
 
                 // Запрашивает и передает данные по выбранному рецепту
 
-                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<OneRecipe, NetworkingError>) in
+                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<[String:Recipe], NetworkingError>) in
 //                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<OneRecipe, NSError>) in
 
                     switch result{
-                    
+
                     case.success(let recipe):
-                        
-                        completion(DetailViewModel(recipe: recipe.recipe))
-                        
+                        if let key = recipe.keys.first, let newRecipe = recipe[key]{
+                            completion(DetailViewModel(recipe: newRecipe))
+
+                        }
+//                        completion(DetailViewModel(recipe: recipe.recipe))
+
                     case .failure(let error):
-                        
+
                         print(error.rawValue)
-                        
+
                     }
                 }
             }
         }
     }
-
+    
     //Передает массив изображений (для ведения подсчета) и изображение для отображения
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType? {
 

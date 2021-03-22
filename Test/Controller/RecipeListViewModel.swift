@@ -9,24 +9,24 @@ import Foundation
 import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
-   
 
     private var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
-//    var destinationVC = DetailViewController()
     private var fetchedData = FetchingData()
-    private var recipes: [RecipeStructure]?
-    var recipesForPrint: [RecipeStructure] = []
+    private var recipes: [Recipe]?
+    var recipesForPrint: [Recipe] = []
 
     func fetchingData(compelition closure: @escaping() -> ()) {
-    
-        fetchedData.fetchData { [weak self] (result: Result<EntireRecipeList, NetworkingError>) in
-//        fetchedData.fetchData { [weak self] (result: Result<EntireRecipeList, NSError>) in
+        fetchedData.fetchData { [weak self] (result: Result<[String:[Recipe]], NetworkingError>) in
+
             switch result{
             
             case .success(let recipes):
-                self?.recipes = recipes.recipes
-                self?.recipesForPrint = recipes.recipes
-                closure()
+                
+                if let key = recipes.keys.first, let recipesList = recipes[key]{
+                    self?.recipes = recipesList
+                    self?.recipesForPrint = recipesList
+                    closure()
+                }
                 
             case .failure(let error):
                 
@@ -40,7 +40,7 @@ class RecipeListViewModel: RecipeListViewModelType {
         return recipesForPrint.count
     }
 
-    private var sortedArray = [RecipeStructure]()
+    private var sortedArray = [Recipe]()
 
     // Реализация сортировки
     func sortArray(by attribute: RecipesSortedBy){
@@ -62,7 +62,7 @@ class RecipeListViewModel: RecipeListViewModelType {
     //Реализация поиска
     func searchBarSearchButtonClicked(for searchText: String) {
         let recipesForSearch = recipesForPrint
-        var arrayForPrinting = [RecipeStructure]()
+        var arrayForPrinting = [Recipe]()
 
         recipesForSearch.forEach { (oneRecipe) in
 
@@ -96,15 +96,15 @@ class RecipeListViewModel: RecipeListViewModelType {
     func didSelectRow(at index: Int, completion: @escaping (DetailViewModelType)->()) {
         let selectedRecipe = recipesForPrint[index]
 //        Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
-        fetchedData.fetchData(for: selectedRecipe.uuid) {(result: Result<OneRecipe, NetworkingError>) in
-//        fetchedData.fetchData(for: selectedRecipe.uuid) {(result: Result<OneRecipe, NSError>) in
-
+        fetchedData.fetchData(for: selectedRecipe.uuid) {(result: Result<[String:Recipe], NetworkingError>) in//
             switch result{
             
             case.success(let recipe):
-                
-                completion(DetailViewModel(recipe: recipe.recipe))
-                
+                if let key = recipe.keys.first, let newRecipe = recipe[key]{
+                    completion(DetailViewModel(recipe: newRecipe))
+
+                }
+
             case .failure(let error):
                 
                 print(error.localizedDescription)
