@@ -154,7 +154,7 @@
 		49BE06AC25D989F300DD1B96 = {
 			isa = PBXGroup;
 			children = (
-				49BE06B725D989F300DD1B96 /* Test */,
+				49BE06B725D989F300DD1B96 /* Recipes */,
 				49BE06B625D989F300DD1B96 /* Products */,
 				26C6B945DE632539A5EEBF52 /* Pods */,
 				844C17BC0B943BDBFA3D4039 /* Frameworks */,
@@ -169,7 +169,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		49BE06B725D989F300DD1B96 /* Test */ = {
+		49BE06B725D989F300DD1B96 /* Recipes */ = {
 			isa = PBXGroup;
 			children = (
 				49BE06B825D989F300DD1B96 /* AppDelegate.swift */,
@@ -183,7 +183,7 @@
 				49BE06C325D989F500DD1B96 /* LaunchScreen.storyboard */,
 				49BE06C625D989F500DD1B96 /* Info.plist */,
 			);
-			path = Test;
+			path = Recipes;
 			sourceTree = "<group>";
 		};
 		844C17BC0B943BDBFA3D4039 /* Frameworks */ = {
