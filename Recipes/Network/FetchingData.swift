@@ -13,7 +13,7 @@ class FetchingData {
 
     private func getURL(for query: String) -> URL?{
         
-        let stringURL = query == "/recipes.json" ? baseURL + query : baseURL + "/recipes/\(query)"
+        let stringURL = query == "/recipes.json" ? baseURL + query : baseURL + "/r2ecipes/\(query)"
         return URL(string: stringURL)
     }
     
@@ -35,6 +35,8 @@ class FetchingData {
                 completion(.failure(.invalidRequest))
                 return
             }
+            let httpurl = response as! HTTPURLResponse
+            print(httpurl.statusCode)
           
             guard let data = data else {
                 completion(.failure(.invalidResponse))
@@ -58,5 +60,7 @@ class FetchingData {
         
     }
     
+
+
 }
 

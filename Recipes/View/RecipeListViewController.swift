@@ -12,6 +12,7 @@ class RecipeListViewController: UIViewController {
     private var searchBar = UISearchBar()
     private var tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
+    let alertService = AlertService()
 
     private var viewModel = RecipeListViewModel()
 
@@ -28,13 +29,23 @@ class RecipeListViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-//        viewModel.fetchingData {
-//            DispatchQueue.main.async { [self] in
-//                setTableView()
-//                tableView.reloadData()
-//                stopActivityIndicator()
-//            }
-//        }
+        viewModel.fetchingData { [weak self] (error) in
+            DispatchQueue.main.async { [self] in
+                
+                guard error == nil else{
+                    
+                    if let alert = self?.alertService.alert(message: error!.localizedDescription){
+                        self?.present(alert, animated: true)
+                    }
+                    return
+                }
+               
+                    self?.setTableView()
+                    self?.tableView.reloadData()
+                    self?.stopActivityIndicator()
+                
+            }
+        }
     }
 
     func setActivityIndicator() {

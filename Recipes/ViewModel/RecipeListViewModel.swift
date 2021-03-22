@@ -15,7 +15,7 @@ class RecipeListViewModel: RecipeListViewModelType {
     private var recipes: [Recipe]?
     var recipesForPrint: [Recipe] = []
 
-    func fetchingData(completion: @escaping() -> ()) {
+    func fetchingData(completion: @escaping(NetworkingError?) -> ()) {
         
         fetchedData.fetchData { [weak self] (result: Result<[String:RecipesList], NetworkingError>) in
 
@@ -28,16 +28,14 @@ class RecipeListViewModel: RecipeListViewModelType {
                     self?.recipes = recipesList
                     self?.recipesForPrint = recipesList
                     
-                    completion()
+                    completion(nil)
                     
                 }else{
                     
                 }
                 
             case .failure(let error):
-                
-                print(error.errorDescription as Any)
-                
+                completion(error)
             }
         }
     }

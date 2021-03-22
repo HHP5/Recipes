@@ -8,10 +8,10 @@
 import Foundation
 
 enum NetworkingError: String, Error {
-
+    case badURL = "A server with the specified hostname could not be found"
     case invalidResponse = "Invalid Response"
     case clientError = "An SSL error has occurred and a secure connection to the server cannot be made."
-    case invalidRequest, badURL = "Invalid request. No value"
+    case invalidRequest = "Invalid request. No value"
     case dataDecodingError = "Data Error"
 }
 

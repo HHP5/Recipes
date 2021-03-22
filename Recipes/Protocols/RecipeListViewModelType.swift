@@ -26,5 +26,5 @@ protocol RecipeListViewModelType{
     
     func didSelectRow(at index: Int, completion: @escaping (DetailViewModelType)->())
     
-    func fetchingData(completion: @escaping ()->())
+    func fetchingData(completion: @escaping (NetworkingError?)->())
 }
