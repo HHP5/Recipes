@@ -15,17 +15,23 @@ class RecipeListViewModel: RecipeListViewModelType {
     private var recipes: [Recipe]?
     var recipesForPrint: [Recipe] = []
 
-    func fetchingData(compelition closure: @escaping() -> ()) {
-        fetchedData.fetchData { [weak self] (result: Result<[String:[Recipe]], NetworkingError>) in
+    func fetchingData(completion: @escaping() -> ()) {
+        
+        fetchedData.fetchData { [weak self] (result: Result<[String:RecipesList], NetworkingError>) in
 
             switch result{
             
-            case .success(let recipes):
+            case .success(let result):
                 
-                if let key = recipes.keys.first, let recipesList = recipes[key]{
+                if let key = result.keys.first, let recipesList = result[key]{
+                    
                     self?.recipes = recipesList
                     self?.recipesForPrint = recipesList
-                    closure()
+                    
+                    completion()
+                    
+                }else{
+                    
                 }
                 
             case .failure(let error):
@@ -101,6 +107,7 @@ class RecipeListViewModel: RecipeListViewModelType {
             
             case.success(let recipe):
                 if let key = recipe.keys.first, let newRecipe = recipe[key]{
+                    
                     completion(DetailViewModel(recipe: newRecipe))
 
                 }

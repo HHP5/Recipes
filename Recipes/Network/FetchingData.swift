@@ -9,6 +9,14 @@ import Foundation
 
 class FetchingData {
     
+    private let baseURL = "https://test.kode-t.ru"
+
+    private func getURL(for query: String) -> URL?{
+        
+        let stringURL = query == "/recipes.json" ? baseURL + query : baseURL + "/recipes/\(query)"
+        return URL(string: stringURL)
+    }
+    
     func fetchData<T: Decodable>(for query: String = "/recipes.json", completion: @escaping (Result<[String:T],NetworkingError>) -> Void) {
         
         guard let url = getURL(for: query) else {
@@ -50,13 +58,5 @@ class FetchingData {
         
     }
     
-
-    private let baseURL = "https://test.kode-t.ru"
-
-    private func getURL(for query: String) -> URL?{
-        
-        let stringURL = query == "/recipes.json" ? baseURL + query : baseURL + "/recipes/\(query)"
-        return URL(string: stringURL)
-    }
 }
 

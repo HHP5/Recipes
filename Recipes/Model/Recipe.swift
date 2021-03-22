@@ -18,7 +18,4 @@ struct Recipe: Codable {
     var similar: [SimilarRecipes]?
 }
 
-struct SimilarRecipes: Codable {
-    var uuid: String
-    var name: String
-}
+

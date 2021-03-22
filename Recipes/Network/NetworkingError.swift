@@ -12,7 +12,7 @@ enum NetworkingError: String, Error {
     case invalidResponse = "Invalid Response"
     case clientError = "An SSL error has occurred and a secure connection to the server cannot be made."
     case invalidRequest, badURL = "Invalid request. No value"
-    case dataDecodingError = "data error"
+    case dataDecodingError = "Data Error"
 }
 
 extension NetworkingError: LocalizedError{

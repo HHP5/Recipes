@@ -34,7 +34,9 @@ class DetailViewModel: DetailViewModelType {
         // Отображение сложности рецепта как закрашенных звезд из 5
         let unicodeWhiteStar = "\u{2606}"
         let unicodeBlackStar = "\u{2605}"
+        
         let difficutlyStars = String(repeating: unicodeBlackStar, count: recipe.difficulty) + String(repeating: unicodeWhiteStar, count: 5 - recipe.difficulty)
+        
         return "Difficulty: \(difficutlyStars)"
     }
 

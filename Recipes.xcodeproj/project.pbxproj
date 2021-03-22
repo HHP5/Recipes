@@ -20,9 +20,10 @@
 		4920189225DFF58900386A19 /* ButtonCellModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4920189125DFF58900386A19 /* ButtonCellModelType.swift */; };
 		493AA6BF25E3A8C00032C5A6 /* RecipeListViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493AA6BE25E3A8C00032C5A6 /* RecipeListViewModelType.swift */; };
 		493EC55725DA51140082B3B9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493EC55625DA51140082B3B9 /* DetailViewController.swift */; };
-		493EC56525DA54DA0082B3B9 /* EntireRecipeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493EC56425DA54DA0082B3B9 /* EntireRecipeList.swift */; };
+		493EC56525DA54DA0082B3B9 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493EC56425DA54DA0082B3B9 /* Recipe.swift */; };
 		4959294525DECDA7005C5587 /* CollectionCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4959294425DECDA7005C5587 /* CollectionCellModel.swift */; };
 		498EDB782608714000B3BFB2 /* NetworkingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498EDB772608714000B3BFB2 /* NetworkingError.swift */; };
+		498EDB8B26088C0400B3BFB2 /* SimilarRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498EDB8A26088C0400B3BFB2 /* SimilarRecipe.swift */; };
 		49ACC36E25DBA73B0012D7A2 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49ACC36D25DBA73B0012D7A2 /* CollectionViewCell.swift */; };
 		49BE06B925D989F300DD1B96 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BE06B825D989F300DD1B96 /* AppDelegate.swift */; };
 		49BE06BB25D989F300DD1B96 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BE06BA25D989F300DD1B96 /* SceneDelegate.swift */; };
@@ -48,9 +49,10 @@
 		4920189125DFF58900386A19 /* ButtonCellModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCellModelType.swift; sourceTree = "<group>"; };
 		493AA6BE25E3A8C00032C5A6 /* RecipeListViewModelType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeListViewModelType.swift; sourceTree = "<group>"; };
 		493EC55625DA51140082B3B9 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
-		493EC56425DA54DA0082B3B9 /* EntireRecipeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntireRecipeList.swift; sourceTree = "<group>"; };
+		493EC56425DA54DA0082B3B9 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		4959294425DECDA7005C5587 /* CollectionCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionCellModel.swift; sourceTree = "<group>"; };
 		498EDB772608714000B3BFB2 /* NetworkingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingError.swift; sourceTree = "<group>"; };
+		498EDB8A26088C0400B3BFB2 /* SimilarRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarRecipe.swift; sourceTree = "<group>"; };
 		49ACC36D25DBA73B0012D7A2 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		49BE06B525D989F300DD1B96 /* Recipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49BE06B825D989F300DD1B96 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 		490BAA2925F7836700FCB924 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				498EDB772608714000B3BFB2 /* NetworkingError.swift */,
 				49BE06D925D98AED00DD1B96 /* FetchingData.swift */,
 			);
 			path = Network;
@@ -120,9 +123,9 @@
 		493EC56225DA54CE0082B3B9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				493EC56425DA54DA0082B3B9 /* EntireRecipeList.swift */,
+				493EC56425DA54DA0082B3B9 /* Recipe.swift */,
+				498EDB8A26088C0400B3BFB2 /* SimilarRecipe.swift */,
 				490BAA2325F3793F00FCB924 /* RecipesSortedBy.swift */,
-				498EDB772608714000B3BFB2 /* NetworkingError.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -300,13 +303,14 @@
 				490BAA2425F3793F00FCB924 /* RecipesSortedBy.swift in Sources */,
 				4920189225DFF58900386A19 /* ButtonCellModelType.swift in Sources */,
 				49ACC36E25DBA73B0012D7A2 /* CollectionViewCell.swift in Sources */,
+				498EDB8B26088C0400B3BFB2 /* SimilarRecipe.swift in Sources */,
 				49BE06BD25D989F300DD1B96 /* RecipeListViewController.swift in Sources */,
 				4920188F25DFF57400386A19 /* CollectionCellModelType.swift in Sources */,
 				4959294525DECDA7005C5587 /* CollectionCellModel.swift in Sources */,
 				49BE06CE25D98A4800DD1B96 /* TableViewCell.swift in Sources */,
 				493AA6BF25E3A8C00032C5A6 /* RecipeListViewModelType.swift in Sources */,
 				4920188C25DFF55F00386A19 /* DetailViewModelType.swift in Sources */,
-				493EC56525DA54DA0082B3B9 /* EntireRecipeList.swift in Sources */,
+				493EC56525DA54DA0082B3B9 /* Recipe.swift in Sources */,
 				4920187E25DFD79400386A19 /* ButtonForSimilarRecipes.swift in Sources */,
 				49BE06B925D989F300DD1B96 /* AppDelegate.swift in Sources */,
 				4920188225DFF01B00386A19 /* ButtonCellModel.swift in Sources */,

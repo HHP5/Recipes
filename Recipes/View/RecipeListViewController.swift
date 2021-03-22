@@ -27,14 +27,14 @@ class RecipeListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        viewModel.fetchingData {
-            DispatchQueue.main.async { [self] in
-                setTableView()
-                tableView.reloadData()
-                stopActivityIndicator()
-            }
-        }
+
+//        viewModel.fetchingData {
+//            DispatchQueue.main.async { [self] in
+//                setTableView()
+//                tableView.reloadData()
+//                stopActivityIndicator()
+//            }
+//        }
     }
 
     func setActivityIndicator() {
