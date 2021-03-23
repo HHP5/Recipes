@@ -13,6 +13,6 @@ protocol TableCellModelType: class{
     
     var description: String {get}
     
-    var imageURL: URL {get}
+    var imageURL: URL? {get}
     
 }

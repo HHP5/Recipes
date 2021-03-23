@@ -12,10 +12,9 @@ class RecipeListViewController: UIViewController {
     private var searchBar = UISearchBar()
     private var tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
-    let alertService = AlertService()
 
     private var viewModel = RecipeListViewModel()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,22 +27,23 @@ class RecipeListViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        
         viewModel.fetchingData { [weak self] (error) in
-            DispatchQueue.main.async { [self] in
-                
+
+            DispatchQueue.main.async { [weak self] in
+
                 guard error == nil else{
-                    
-                    if let alert = self?.alertService.alert(message: error!.localizedDescription){
-                        self?.present(alert, animated: true)
-                    }
+
+                    let alert = AlertService.alert(message: error!.localizedDescription)
+                    self?.present(alert, animated: true)
+
                     return
                 }
-               
+
                     self?.setTableView()
                     self?.tableView.reloadData()
                     self?.stopActivityIndicator()
-                
+
             }
         }
     }
@@ -149,31 +149,51 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         let destinationVC = DetailViewController()
-        
-        viewModel.didSelectRow(at: indexPath.row) { [weak self] (recipe) in
-            destinationVC.detailModel = recipe
-            tableView.deselectRow(at: indexPath, animated: true)
-            self?.navigationController?.pushViewController(destinationVC, animated: true)
+        viewModel.didSelectRow(at: indexPath.row) { [weak self] (result: Result<DetailViewModelType, NetworkError>) in
+
+            switch result{
+
+            case .success(let recipe):
+
+                destinationVC.detailModel = recipe
+                tableView.deselectRow(at: indexPath, animated: true)
+                self?.navigationController?.pushViewController(destinationVC, animated: true)
+
+            case .failure(let error):
+
+                let alert = AlertService.alert(message: error.localizedDescription)
+
+                DispatchQueue.main.async {
+
+                    self?.present(alert, animated: true, completion: nil)
+
+                }
+
+            }
         }
+        
     }
 }
 
 extension RecipeListViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
+        
         self.searchBar.endEditing(true) // для того, чтобы убрать клавиатуру
-
-        guard let searchText = searchBar.text?.lowercased() else { return }
-
-        viewModel.searchBarSearchButtonClicked(for: searchText)
-
-        tableView.reloadData()
+        
+        if let searchText = searchBar.text?.lowercased() {
+            
+            viewModel.searchBarSearchButtonClicked(for: searchText)
+            
+            tableView.reloadData()
+        }
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
         navigationItem.titleView = nil
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(handleShowSearchBar))
+        navigationItem.rightBarButtonItem?.tintColor = .black
         searchBar.showsCancelButton = false
 
         searchBar.text = nil

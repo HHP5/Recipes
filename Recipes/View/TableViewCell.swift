@@ -18,9 +18,13 @@ class TableViewCell: UITableViewCell {
 
             nameLabel.text = cellModel.name
             descriptionLabel.text = cellModel.description
-
-            imageFood.kf.indicatorType = .activity
-            imageFood.kf.setImage(with: cellModel.imageURL)
+            
+            if let image = cellModel.imageURL{
+                
+                imageFood.kf.indicatorType = .activity
+                imageFood.kf.setImage(with: image)
+                
+            }
         }
     }
     //MARK: - UI Elements

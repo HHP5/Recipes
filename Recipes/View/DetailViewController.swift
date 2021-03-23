@@ -8,10 +8,10 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-
+    
     var detailModel: DetailViewModelType? {
         willSet(detailModel) {
-            guard let detailModel = detailModel else { return }
+            guard let detailModel = detailModel else {return}
 
             nameLabel.text = detailModel.name
             descriptionLabel.text = detailModel.description
@@ -152,8 +152,8 @@ class DetailViewController: UIViewController {
 
 extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let detailModel = detailModel else { return 0 }
-        return detailModel.numberOfButtons!
+        guard let detailModel = detailModel, let numberOfButtons = detailModel.numberOfButtons  else { return 0 }
+        return numberOfButtons
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -169,15 +169,40 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        
         let destinationVC = DetailViewController()
         
-        guard let detailModel = detailModel else { return }
-        detailModel.similarRecipePressed(for: indexPath.row) { [weak self] (recipe) in
-            destinationVC.detailModel = recipe
-            self?.navigationController?.pushViewController(destinationVC, animated: true)
-            self?.buttonFieldView.deselectRow(at: indexPath, animated: true)
+        guard let detailModel = detailModel else {
+            detailModelError()
+            return
         }
+        
+        detailModel.similarRecipePressed(for: indexPath.row) {[weak self] (result: Result<DetailViewModelType, NetworkError>) in
+            
+            switch result{
+            
+            case .success(let recipe):
+                
+                destinationVC.detailModel = recipe
+                self?.navigationController?.pushViewController(destinationVC, animated: true)
+                self?.buttonFieldView.deselectRow(at: indexPath, animated: true)
+                
+            case .failure(let error):
+                
+                let alert = AlertService.alert(message: error.localizedDescription)
+                
+                DispatchQueue.main.async {
+                    
+                    self?.present(alert, animated: true, completion: nil)
+                    
+                }
+            }
+        }
+    }
+    
+    private func detailModelError(){
+        let alert = AlertService.alert(message: "A critical error occurred, data is lost")
+        present(alert, animated: true, completion: nil)
     }
 
 }

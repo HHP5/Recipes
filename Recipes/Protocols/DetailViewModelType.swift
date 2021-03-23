@@ -27,7 +27,7 @@ protocol DetailViewModelType: class{
         
     func setSimilarButtons(closure: @escaping ()->())
     
-    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType)->())
+    func similarRecipePressed(for index: Int, completion: @escaping (Result<DetailViewModelType,NetworkError>)->())
     
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType?
     

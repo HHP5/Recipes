@@ -24,8 +24,8 @@ class TableCellModel: TableCellModelType {
         return resultString
     }
 
-    var imageURL: URL {
-        return URL(string: recipe.images[0])!
+    var imageURL: URL? {
+        return URL(string: recipe.images[0])
     }
 
     init(recipe: Recipe) {

@@ -24,7 +24,7 @@ protocol RecipeListViewModelType{
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> TableCellModelType?
     
-    func didSelectRow(at index: Int, completion: @escaping (DetailViewModelType)->())
-    
-    func fetchingData(completion: @escaping (NetworkingError?)->())
+    func didSelectRow(at index: Int, completion: @escaping (Result<DetailViewModelType,NetworkError>)->())
+
+    func fetchingData(completion: @escaping (NetworkError?)->())
 }

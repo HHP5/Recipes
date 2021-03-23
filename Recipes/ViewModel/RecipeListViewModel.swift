@@ -11,16 +11,13 @@ import UIKit
 class RecipeListViewModel: RecipeListViewModelType {
 
     private var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
-    private var fetchedData = FetchingData()
-    private var recipes: [Recipe]?
-    var recipesForPrint: [Recipe] = []
-
-    func fetchingData(completion: @escaping(NetworkingError?) -> ()) {
+    private var recipes: RecipesList?
+    var recipesForPrint: RecipesList = []
+    
+    func fetchingData(completion: @escaping(NetworkError?) -> ()) {
         
-        fetchedData.fetchData { [weak self] (result: Result<[String:RecipesList], NetworkingError>) in
-
+        ServiceLayer.request(router: Router.allRecipes) { [weak self] (result:Result<[String : RecipesList], NetworkError>) in
             switch result{
-            
             case .success(let result):
                 
                 if let key = result.keys.first, let recipesList = result[key]{
@@ -37,8 +34,11 @@ class RecipeListViewModel: RecipeListViewModelType {
             case .failure(let error):
                 completion(error)
             }
+        
         }
     }
+    
+    
 
     var numberOfRow: Int {
         return recipesForPrint.count
@@ -68,19 +68,19 @@ class RecipeListViewModel: RecipeListViewModelType {
         let recipesForSearch = recipesForPrint
         var arrayForPrinting = [Recipe]()
 
-        recipesForSearch.forEach { (oneRecipe) in
+        recipesForSearch.forEach { (recipe) in
 
             var searchByDescription = false // Эта переменная изначально false, так как в рецепте может не быть описания
 
-            let searchByName = oneRecipe.name.lowercased().contains(searchText)
+            let searchByName = recipe.name.lowercased().contains(searchText)
 
-            if let descriptionForOneRecipe = oneRecipe.description { // проверяет, есть ли описание и если есть, то начинает поиск в нем
+            if let descriptionForOneRecipe = recipe.description { // проверяет, есть ли описание и если есть, то начинает поиск в нем
                 searchByDescription = descriptionForOneRecipe.lowercased().contains(searchText)
             }
-            let searchByInstruction = oneRecipe.instructions.lowercased().contains(searchText)
+            let searchByInstruction = recipe.instructions.lowercased().contains(searchText)
 
             if searchByName || searchByDescription || searchByInstruction {
-                arrayForPrinting.append(oneRecipe)
+                arrayForPrinting.append(recipe)
             }
             recipesForPrint = arrayForPrinting // Массив для отображения = массив, в котором найдено что нужно
         }
@@ -97,22 +97,26 @@ class RecipeListViewModel: RecipeListViewModelType {
         return TableCellModel(recipe: recipe)
     }
 
-    func didSelectRow(at index: Int, completion: @escaping (DetailViewModelType)->()) {
+    func didSelectRow(at index: Int, completion: @escaping (Result<DetailViewModelType,NetworkError>)->()) {
+
         let selectedRecipe = recipesForPrint[index]
 //        Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
-        fetchedData.fetchData(for: selectedRecipe.uuid) {(result: Result<[String:Recipe], NetworkingError>) in//
+       
+        ServiceLayer.request(router: Router.oneRecipe(uuid: selectedRecipe.uuid)) { (result: Result<[String : Recipe], NetworkError>) in
+           
             switch result{
             
-            case.success(let recipe):
+            case .success(let recipe):
+                
                 if let key = recipe.keys.first, let newRecipe = recipe[key]{
-                    
-                    completion(DetailViewModel(recipe: newRecipe))
 
+                    completion(.success(DetailViewModel(recipe: newRecipe)))
                 }
-
+                
             case .failure(let error):
                 
-                print(error.localizedDescription)
+                completion(.failure(error))
+                
             }
         }
     }

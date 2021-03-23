@@ -70,34 +70,32 @@ class DetailViewModel: DetailViewModelType {
         return resultLabel
     }
 
-    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType)->()) {
+    func similarRecipePressed(for index: Int, completion: @escaping (Result<DetailViewModelType,NetworkError>)->()) {
 
-        let fetchingData = FetchingData()
+//        let fetchingData = FetchingData()
         guard let similarRecipe = similarRecipes,
-              let selectedRecipe = similarRecipes?[index].name else { return }
+              let recipe = similarRecipes?[index].name else { return }
 
-        similarRecipe.forEach { (recipe) in
-            if recipe.name == selectedRecipe {
-                let selectedRecipeUUID = recipe.uuid
+        similarRecipe.forEach { (selectedRecipe) in
+            if selectedRecipe.name == recipe {
 
                 // Запрашивает и передает данные по выбранному рецепту
 
-                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<[String:Recipe], NetworkingError>) in
-//                fetchingData.fetchData(for: selectedRecipeUUID) { (result: Result<OneRecipe, NSError>) in
-
+                ServiceLayer.request(router: Router.oneRecipe(uuid: selectedRecipe.uuid)) { (result:Result<[String : Recipe], NetworkError>) in
+                    
                     switch result{
-
-                    case.success(let recipe):
+                    
+                    case .success(let recipe):
+                        
                         if let key = recipe.keys.first, let newRecipe = recipe[key]{
-                            completion(DetailViewModel(recipe: newRecipe))
-
+                            completion(.success(DetailViewModel(recipe: newRecipe)))
+                            
                         }
-//                        completion(DetailViewModel(recipe: recipe.recipe))
-
+                        
                     case .failure(let error):
-
-                        print(error.rawValue)
-
+                        
+                        completion(.failure(error))
+                    
                     }
                 }
             }
