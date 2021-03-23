@@ -10,8 +10,8 @@ import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
 
-    private var isSoarted = false // указывает на то, была ли сортировка (это нужно для правильной работы поиска)
     private var recipes: RecipesList?
+    private var sortedArray: RecipesList = []
     var recipesForPrint: RecipesList = []
     
     func fetchingData(completion: @escaping(NetworkError?) -> ()) {
@@ -24,51 +24,44 @@ class RecipeListViewModel: RecipeListViewModelType {
                     
                     self?.recipes = recipesList
                     self?.recipesForPrint = recipesList
+                    self?.sortedArray = recipesList
                     
                     completion(nil)
-                    
-                }else{
                     
                 }
                 
             case .failure(let error):
+                
                 completion(error)
             }
         
         }
     }
     
-    
-
     var numberOfRow: Int {
         return recipesForPrint.count
     }
 
-    private var sortedArray = [Recipe]()
-
     // Реализация сортировки
     func sortArray(by attribute: RecipesSortedBy){
-
-        let recipesForSort = recipesForPrint
-        isSoarted = true
         
         switch attribute {
-        case .lastUpdateAscending:
-            sortedArray = recipesForSort.sorted(by: { $0.lastUpdated > $1.lastUpdated })
         case .lastUpdateDescending:
-            sortedArray = recipesForSort.sorted(by: { $0.lastUpdated < $1.lastUpdated })
+            sortedArray = recipesForPrint.sorted(by: { $0.lastUpdated > $1.lastUpdated })
+        case .lastUpdateAscending:
+            sortedArray = recipesForPrint.sorted(by: { $0.lastUpdated < $1.lastUpdated })
         case .name:
-            sortedArray = recipesForSort.sorted(by: { $0.name < $1.name })
+            sortedArray = recipesForPrint.sorted(by: { $0.name < $1.name })
         }
         recipesForPrint = sortedArray //Выводит на экран отсортированный массив
     }
 
     //Реализация поиска
     func searchBarSearchButtonClicked(for searchText: String) {
-        let recipesForSearch = recipesForPrint
+
         var arrayForPrinting = [Recipe]()
 
-        recipesForSearch.forEach { (recipe) in
+        sortedArray.forEach { (recipe) in
 
             var searchByDescription = false // Эта переменная изначально false, так как в рецепте может не быть описания
 
@@ -87,9 +80,8 @@ class RecipeListViewModel: RecipeListViewModelType {
     }
 
     func searchBarCancelButtonClicked() {
-        guard let recipes = recipes else { return }
-        // На случай если рецепты были отсортированы, а уже потом произведен поиск. После отмены все вернется к отсортированному виду
-        recipesForPrint = isSoarted ? sortedArray : recipes
+ 
+        recipesForPrint = sortedArray
     }
 
     func cellViewModel(forIndexPath indexPath: IndexPath) -> TableCellModelType? {

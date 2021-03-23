@@ -22,11 +22,6 @@ class RecipeListViewController: UIViewController {
         tableView.dataSource = self
         setNavBar()
         setActivityIndicator()
-
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
         viewModel.fetchingData { [weak self] (error) in
 
@@ -46,6 +41,7 @@ class RecipeListViewController: UIViewController {
 
             }
         }
+
     }
 
     func setActivityIndicator() {
@@ -147,58 +143,40 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         let destinationVC = DetailViewController()
         destinationVC.detailModel = viewModel.didSelectRow(at: indexPath.row)
         navigationController?.pushViewController(destinationVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
-
     }
 
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//        let destinationVC = DetailViewController()
-//        viewModel.didSelectRow(at: indexPath.row) { [weak self] (result: Result<DetailViewModelType, NetworkError>) in
-//
-//            switch result{
-//
-//            case .success(let recipe):
-//
-//                destinationVC.detailModel = recipe
-//                tableView.deselectRow(at: indexPath, animated: true)
-//                self?.navigationController?.pushViewController(destinationVC, animated: true)
-//
-//            case .failure(let error):
-//
-//                let alert = AlertService.alert(message: error.localizedDescription)
-//
-//                DispatchQueue.main.async {
-//
-//                    self?.present(alert, animated: true, completion: nil)
-//
-//                }
-//
-//            }
-//        }
-//    }
-    
-
-    
-    
 }
 
 extension RecipeListViewController: UISearchBarDelegate {
 
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        self.searchBar.endEditing(true) // для того, чтобы убрать клавиатуру
-        
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+
         if let searchText = searchBar.text?.lowercased() {
-            
-            viewModel.searchBarSearchButtonClicked(for: searchText)
-            
+
+            if searchText == "" {
+                viewModel.searchBarCancelButtonClicked()
+                self.searchBar.endEditing(true)
+
+            } else{
+                
+                viewModel.searchBarSearchButtonClicked(for: searchText)
+
+            }
             tableView.reloadData()
+
         }
     }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.searchBar.endEditing(true)
+    }
+    
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         
