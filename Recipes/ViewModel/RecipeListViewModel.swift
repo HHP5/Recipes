@@ -97,27 +97,9 @@ class RecipeListViewModel: RecipeListViewModelType {
         return TableCellModel(recipe: recipe)
     }
 
-    func didSelectRow(at index: Int, completion: @escaping (Result<DetailViewModelType,NetworkError>)->()) {
-
+    
+    func didSelectRow(at index: Int) -> DetailViewModelType {
         let selectedRecipe = recipesForPrint[index]
-//        Запрос по выбранному рецепту (потому что similar рецептов нет в общем запросе, для каждого рецепта отдельно)
-       
-        ServiceLayer.request(router: Router.oneRecipe(uuid: selectedRecipe.uuid)) { (result: Result<[String : Recipe], NetworkError>) in
-           
-            switch result{
-            
-            case .success(let recipe):
-                
-                if let key = recipe.keys.first, let newRecipe = recipe[key]{
-
-                    completion(.success(DetailViewModel(recipe: newRecipe)))
-                }
-                
-            case .failure(let error):
-                
-                completion(.failure(error))
-                
-            }
-        }
+        return DetailViewModel(uuid: selectedRecipe.uuid)
     }
 }

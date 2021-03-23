@@ -22,6 +22,7 @@ class CollectionViewCell: UICollectionViewCell {
             
             imageFood.kf.indicatorType = .activity
             imageFood.kf.setImage(with: imageURL)
+            imageFood.contentMode = .scaleAspectFit
             
             countImageLabel.isHidden = totalCountImages > 1 ? false : true
             countImageLabel.text = "\(currentImage) / \(totalCountImages)"
@@ -29,11 +30,7 @@ class CollectionViewCell: UICollectionViewCell {
     }
     //MARK: - UI Elements
 
-    private var imageFood: UIImageView = {
-        let image = UIImageView()
-        image.contentMode = .scaleAspectFit
-        return image
-    }()
+    private var imageFood = UIImageView() 
 
     let countImageLabel: UILabel = {
         let label = UILabel()

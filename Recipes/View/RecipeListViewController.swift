@@ -145,34 +145,45 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
         tableViewCell.cellModel = cellViewModel
         return tableViewCell
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         let destinationVC = DetailViewController()
-        viewModel.didSelectRow(at: indexPath.row) { [weak self] (result: Result<DetailViewModelType, NetworkError>) in
+        destinationVC.detailModel = viewModel.didSelectRow(at: indexPath.row)
+        navigationController?.pushViewController(destinationVC, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
 
-            switch result{
-
-            case .success(let recipe):
-
-                destinationVC.detailModel = recipe
-                tableView.deselectRow(at: indexPath, animated: true)
-                self?.navigationController?.pushViewController(destinationVC, animated: true)
-
-            case .failure(let error):
-
-                let alert = AlertService.alert(message: error.localizedDescription)
-
-                DispatchQueue.main.async {
-
-                    self?.present(alert, animated: true, completion: nil)
-
-                }
-
-            }
-        }
-        
     }
+
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//        let destinationVC = DetailViewController()
+//        viewModel.didSelectRow(at: indexPath.row) { [weak self] (result: Result<DetailViewModelType, NetworkError>) in
+//
+//            switch result{
+//
+//            case .success(let recipe):
+//
+//                destinationVC.detailModel = recipe
+//                tableView.deselectRow(at: indexPath, animated: true)
+//                self?.navigationController?.pushViewController(destinationVC, animated: true)
+//
+//            case .failure(let error):
+//
+//                let alert = AlertService.alert(message: error.localizedDescription)
+//
+//                DispatchQueue.main.async {
+//
+//                    self?.present(alert, animated: true, completion: nil)
+//
+//                }
+//
+//            }
+//        }
+//    }
+    
+
+    
+    
 }
 
 extension RecipeListViewController: UISearchBarDelegate {
