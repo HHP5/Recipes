@@ -9,42 +9,37 @@ import Foundation
 import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
+    private var recipes: [Recipe]?
+    private var sortedArray: [Recipe] = []
+    var recipesForPrint: [Recipe] = []
 
-    private var recipes: RecipesList?
-    private var sortedArray: RecipesList = []
-    var recipesForPrint: RecipesList = []
-    
-    func fetchingData(completion: @escaping(NetworkError?) -> ()) {
-        
-        ServiceLayer.request(router: Router.allRecipes) { [weak self] (result:Result<[String : RecipesList], NetworkError>) in
-            switch result{
+    func fetchingData(completion: @escaping(NetworkError?) -> Void) {
+        ServiceLayer.request(router: Router.allRecipes) { [weak self] (result: Result<RecipeListResponse, Error>) in
+
+            switch result {
+
             case .success(let result):
-                
-                if let key = result.keys.first, let recipesList = result[key]{
-                    
-                    self?.recipes = recipesList
-                    self?.recipesForPrint = recipesList
-                    self?.sortedArray = recipesList
-                    
-                    completion(nil)
-                    
-                }
-                
+
+                self?.recipes = result.recipes
+                self?.recipesForPrint = result.recipes
+                self?.sortedArray = result.recipes
+
+                completion(nil)
+
             case .failure(let error):
-                
-                completion(error)
+
+                completion(error as? NetworkError)
+
             }
-        
         }
     }
-    
+
     var numberOfRow: Int {
         return recipesForPrint.count
     }
 
     // Реализация сортировки
-    func sortArray(by attribute: RecipesSortedBy){
-        
+    func sortArray(by attribute: RecipesSortedBy) {
         switch attribute {
         case .lastUpdateDescending:
             sortedArray = recipesForPrint.sorted(by: { $0.lastUpdated > $1.lastUpdated })
@@ -53,21 +48,21 @@ class RecipeListViewModel: RecipeListViewModelType {
         case .name:
             sortedArray = recipesForPrint.sorted(by: { $0.name < $1.name })
         }
-        recipesForPrint = sortedArray //Выводит на экран отсортированный массив
+        recipesForPrint = sortedArray // Выводит на экран отсортированный массив
     }
 
-    //Реализация поиска
+    // Реализация поиска
     func searchBarSearchButtonClicked(for searchText: String) {
+        var arrayForPrinting: [Recipe] = []
 
-        var arrayForPrinting = [Recipe]()
-
-        sortedArray.forEach { (recipe) in
+        sortedArray.forEach { recipe in
 
             var searchByDescription = false // Эта переменная изначально false, так как в рецепте может не быть описания
 
             let searchByName = recipe.name.lowercased().contains(searchText)
 
-            if let descriptionForOneRecipe = recipe.description { // проверяет, есть ли описание и если есть, то начинает поиск в нем
+            // проверяет, есть ли описание и если есть, то начинает поиск в нем
+            if let descriptionForOneRecipe = recipe.description {
                 searchByDescription = descriptionForOneRecipe.lowercased().contains(searchText)
             }
             let searchByInstruction = recipe.instructions.lowercased().contains(searchText)
@@ -80,7 +75,6 @@ class RecipeListViewModel: RecipeListViewModelType {
     }
 
     func searchBarCancelButtonClicked() {
- 
         recipesForPrint = sortedArray
     }
 
@@ -89,7 +83,6 @@ class RecipeListViewModel: RecipeListViewModelType {
         return TableCellModel(recipe: recipe)
     }
 
-    
     func didSelectRow(at index: Int) -> DetailViewModelType {
         let selectedRecipe = recipesForPrint[index]
         return DetailViewModel(uuid: selectedRecipe.uuid)

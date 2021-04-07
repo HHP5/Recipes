@@ -15,7 +15,7 @@ protocol DetailViewModelType: class{
     
     var difficulty: String? {get}
     
-    var description: String? {get}
+    var description: String {get}
     
     var instruction: String? {get}
     
@@ -23,13 +23,11 @@ protocol DetailViewModelType: class{
             
     var numberOfButtons: Int? {get set}
         
-    var similarLabel: String? {get}
+    var hasSimilarRecipes: Bool {get}
         
-    func setRecipeAttributes(completion: @escaping (NetworkError?)->())
-//    func setSimilarButtons(closure: @escaping ()->())
-    
-//    func didSelectRow(at index: Int) -> DetailViewModelType
-    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType)->())
+    func setRecipeAttributes(completion: @escaping (NetworkError?) -> Void)
+
+    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType) -> Void)
     
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType?
     

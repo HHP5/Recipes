@@ -7,6 +7,14 @@
 
 import Foundation
 
+struct RecipeListResponse: Codable {
+    let recipes: [Recipe]
+}
+
+struct RecipeResponse: Codable {
+    let recipe: Recipe
+}
+
 struct Recipe: Codable {
     var uuid: String
     var name: String

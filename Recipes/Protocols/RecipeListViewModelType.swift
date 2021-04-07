@@ -10,8 +10,6 @@ import UIKit
 
 protocol RecipeListViewModelType{
     
-    typealias RecipesList = [Recipe]
-
     var numberOfRow: Int {get}
     
     var recipesForPrint: [Recipe] {get set}
@@ -24,9 +22,7 @@ protocol RecipeListViewModelType{
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> TableCellModelType?
     
-//    func didSelectRow(at index: Int, completion: @escaping (Result<DetailViewModelType,NetworkError>)->())
     func didSelectRow(at index: Int) -> DetailViewModelType
-
 
     func fetchingData(completion: @escaping (NetworkError?)->())
 }

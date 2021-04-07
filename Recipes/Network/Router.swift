@@ -10,18 +10,18 @@ import Foundation
 enum Router {
     
     case allRecipes
-    case oneRecipe(uuid: String)
+    case recipe(uuid: String)
     
-    var scheme: String{
+    var scheme: String {
         switch self {
-        case .allRecipes, .oneRecipe:
+        case .allRecipes, .recipe:
             return "https"
         }
     }
     
     var host: String {
         switch self {
-        case .allRecipes, .oneRecipe:
+        case .allRecipes, .recipe:
             return "test.kode-t.ru"
         }
     }
@@ -30,14 +30,14 @@ enum Router {
         switch self {
         case .allRecipes:
             return "/recipes.json"
-        case .oneRecipe(let uuid):
+        case .recipe(let uuid):
             return "/recipes/\(uuid)"
         }
     }
     
     var method: String {
         switch self {
-        case .allRecipes, .oneRecipe:
+        case .allRecipes, .recipe:
             return "GET"
         }
     }

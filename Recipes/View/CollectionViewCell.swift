@@ -28,7 +28,7 @@ class CollectionViewCell: UICollectionViewCell {
             countImageLabel.text = "\(currentImage) / \(totalCountImages)"
         }
     }
-    //MARK: - UI Elements
+    // MARK: - UI Elements
 
     private var imageFood = UIImageView() 
 
@@ -44,11 +44,13 @@ class CollectionViewCell: UICollectionViewCell {
         label.isHidden = true
         return label
     }()
-    //MARK: - Constraits and Subviews
+    
+    // MARK: - Constraits and Subviews
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setSubviews()
-
     }
 
     required init?(coder: NSCoder) {
@@ -59,13 +61,17 @@ class CollectionViewCell: UICollectionViewCell {
         contentView.addSubview(imageFood)
         contentView.addSubview(countImageLabel)
 
+        setImageFoodConstraint()
+
+        countImageLabel.frame = CGRect(x: Int(contentView.frame.width) - 70, y: 0, width: 65, height: 30)
+    }
+    
+    private func setImageFoodConstraint() {
         imageFood.translatesAutoresizingMaskIntoConstraints = false
         imageFood.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         imageFood.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         imageFood.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50).isActive = true
         imageFood.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50).isActive = true
-
-        countImageLabel.frame = CGRect(x: Int(contentView.frame.width) - 70, y: 0, width: 65, height: 30)
     }
 
 }

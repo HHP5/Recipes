@@ -9,7 +9,7 @@ import Foundation
 
 protocol CollectionCellModelType: class {
     
-    var imageURL: URL {get}
+    var imageURL: URL? {get}
 
     var imageURLString: String {get}
     

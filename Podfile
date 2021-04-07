@@ -7,5 +7,6 @@ target 'Recipes' do
 
   # Pods for Test
   pod 'Kingfisher', '~> 6.0'
+  pod 'SwiftLint'
 
 end

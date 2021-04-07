@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RecipesSortedBy: String{
+enum RecipesSortedBy: String {
     
     case name = "Name"
     case lastUpdateDescending = "Last Update ↓"

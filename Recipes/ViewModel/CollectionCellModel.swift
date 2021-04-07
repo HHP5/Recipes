@@ -9,13 +9,11 @@ import Foundation
 import UIKit
 
 class CollectionCellModel: CollectionCellModelType {
-
     var imageURLString: String
     var images: [String]
 
-    var imageURL: URL {
-        let url = URL(string: imageURLString)
-        return url!
+    var imageURL: URL? {
+        return URL(string: imageURLString)
     }
 
     var totalNumberImages: Int {
@@ -24,9 +22,9 @@ class CollectionCellModel: CollectionCellModelType {
 
     var currentImage: Int {
         var result = 0
-        for i in 0...images.count - 1 where images.count > 1 {
-            if images[i].contains(imageURLString) {
-                result = i + 1
+        for x in 0...images.count - 1 where images.count > 1 {
+            if images[x].contains(imageURLString) {
+                result = x + 1
             }
         }
         return result

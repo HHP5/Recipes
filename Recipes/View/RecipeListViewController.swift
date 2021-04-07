@@ -8,7 +8,6 @@
 import UIKit
 
 class RecipeListViewController: UIViewController {
-
     private var searchBar = UISearchBar()
     private var tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
@@ -23,15 +22,15 @@ class RecipeListViewController: UIViewController {
         setNavBar()
         setActivityIndicator()
         
-        viewModel.fetchingData { [weak self] (error) in
+        viewModel.fetchingData { [weak self] error in
 
             DispatchQueue.main.async { [weak self] in
 
-                guard error == nil else{
-
-                    let alert = AlertService.alert(message: error!.localizedDescription)
+                if let error = error {
+                    
+                    let alert = AlertService.alert(message: error.localizedDescription)
                     self?.present(alert, animated: true)
-
+                    
                     return
                 }
 
@@ -73,32 +72,39 @@ class RecipeListViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.identifier)
         tableView.rowHeight = 200
-    }
 
+    }
+    
     private func setNavBar() {
         navigationItem.title = "R E C I P E S"
         // Кнопка поиска
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(handleShowSearchBar))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search,
+                                                            target: self,
+                                                            action: #selector(handleShowSearchBar))
         navigationItem.rightBarButtonItem?.tintColor = .black
         // Кнопка сортировки
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"), style: .done, target: self, action: #selector(handleShowSortItems))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down"),
+                                                           style: .done, target: self,
+                                                           action: #selector(handleShowSortItems))
         navigationItem.leftBarButtonItem?.tintColor = .black
 
     }
 
     @objc func handleShowSortItems() {
         let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
-        let sortByDateAscending = UIAlertAction(title: RecipesSortedBy.lastUpdateDescending.rawValue, style: .default) { [self] (action) in
-            viewModel.sortArray(by: .lastUpdateDescending)
-            tableView.reloadData()
+        let sortByDateAscending = UIAlertAction(title: RecipesSortedBy.lastUpdateDescending.rawValue,
+                                                style: .default) { [weak self] _ in
+            self?.viewModel.sortArray(by: .lastUpdateDescending)
+            self?.tableView.reloadData()
         }
-        let sortByDateDescending = UIAlertAction(title: RecipesSortedBy.lastUpdateAscending.rawValue, style: .default) { [self] (action) in
-            viewModel.sortArray(by: .lastUpdateAscending)
-            tableView.reloadData()
+        let sortByDateDescending = UIAlertAction(title: RecipesSortedBy.lastUpdateAscending.rawValue,
+                                                 style: .default) { [weak self] _ in
+            self?.viewModel.sortArray(by: .lastUpdateAscending)
+            self?.tableView.reloadData()
         }
-        let sortByName = UIAlertAction(title: RecipesSortedBy.name.rawValue, style: .default) { [self] (action) in
-            viewModel.sortArray(by: .name)
-            tableView.reloadData()
+        let sortByName = UIAlertAction(title: RecipesSortedBy.name.rawValue, style: .default) { [weak self] _ in
+            self?.viewModel.sortArray(by: .name)
+            self?.tableView.reloadData()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
 
@@ -123,10 +129,10 @@ class RecipeListViewController: UIViewController {
     }
 
 }
-//MARK: - TableView DataSource and Delegate
+
+// MARK: - TableView DataSource and Delegate
 
 extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return viewModel.numberOfRow
@@ -153,17 +159,15 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension RecipeListViewController: UISearchBarDelegate {
-
-    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
 
         if let searchText = searchBar.text?.lowercased() {
 
-            if searchText == "" {
+            if searchText.isEmpty {
                 viewModel.searchBarCancelButtonClicked()
                 self.searchBar.endEditing(true)
 
-            } else{
+            } else {
                 
                 viewModel.searchBarSearchButtonClicked(for: searchText)
 
@@ -177,11 +181,12 @@ extension RecipeListViewController: UISearchBarDelegate {
         self.searchBar.endEditing(true)
     }
     
-
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         
         navigationItem.titleView = nil
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(handleShowSearchBar))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search,
+                                                            target: self,
+                                                            action: #selector(handleShowSearchBar))
         navigationItem.rightBarButtonItem?.tintColor = .black
         searchBar.showsCancelButton = false
 
@@ -194,9 +199,9 @@ extension RecipeListViewController: UISearchBarDelegate {
 
 }
 
+// Решение проблемы с layout error для alertController
+// (ссылка: https://stackoverflow.com/questions/55653187/swift-default-alertviewcontroller-breaking-constraints)
 
-
-// Решение проблемы с layout error для alertController (ссылка: https://stackoverflow.com/questions/55653187/swift-default-alertviewcontroller-breaking-constraints)
 extension UIAlertController {
     func pruneNegativeWidthConstraints() {
         for subView in self.view.subviews {

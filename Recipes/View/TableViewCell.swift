@@ -19,7 +19,7 @@ class TableViewCell: UITableViewCell {
             nameLabel.text = cellModel.name
             descriptionLabel.text = cellModel.description
             
-            if let image = cellModel.imageURL{
+            if let image = cellModel.imageURL {
                 
                 imageFood.kf.indicatorType = .activity
                 imageFood.kf.setImage(with: image)
@@ -27,7 +27,8 @@ class TableViewCell: UITableViewCell {
             }
         }
     }
-    //MARK: - UI Elements
+    
+    // MARK: - UI Elements
 
     private let nameLabel: UILabel = {
         let label = UILabel()
@@ -56,41 +57,47 @@ class TableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        addSubview(nameLabel)
-        addSubview(imageFood)
-        addSubview(descriptionLabel)
-
+        setSubviews()
         setConstraint()
-
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    //MARK: - Constraints
-    func setConstraint() {
+    // MARK: - Constraints
 
+    private func setSubviews() {
+        addSubview(nameLabel)
+        addSubview(imageFood)
+        addSubview(descriptionLabel)
+    }
+    
+    private func setConstraint() {
+        setNameLabelConstraint()
+        setImageFoodConstraint()
+        setDescriptionLabelConstraint()
+    }
+    
+    private func setNameLabelConstraint() {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         nameLabel.topAnchor.constraint(equalTo: imageFood.topAnchor).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -160).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: descriptionLabel.topAnchor, constant: -20).isActive = true
-
+    }
+    private func setImageFoodConstraint() {
         imageFood.translatesAutoresizingMaskIntoConstraints = false
         imageFood.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         imageFood.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 5).isActive = true
         imageFood.topAnchor.constraint(equalTo: topAnchor, constant: 30).isActive = true
         imageFood.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
-
+    }
+    private func setDescriptionLabelConstraint() {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         descriptionLabel.trailingAnchor.constraint(equalTo: imageFood.leadingAnchor, constant: -10).isActive = true
         descriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50).isActive = true
-
     }
 
 }
-
-
-

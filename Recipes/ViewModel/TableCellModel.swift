@@ -9,27 +9,24 @@ import Foundation
 import UIKit
 
 class TableCellModel: TableCellModelType {
-
+    
     private var recipe: Recipe
-
+    
     var name: String {
         return recipe.name
     }
-
+    
     var description: String {
-        var resultString = ""
-        if recipe.description != "" && recipe.description != nil {
-            resultString = recipe.description!
-        }
-        return resultString
+        guard let description = recipe.description else { return "" }
+        return description
     }
-
+    
     var imageURL: URL? {
         return URL(string: recipe.images[0])
     }
-
+    
     init(recipe: Recipe) {
         self.recipe = recipe
     }
-
+    
 }

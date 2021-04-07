@@ -13,22 +13,24 @@ class DetailViewController: UIViewController {
         willSet(detailModel) {
             guard let detailModel = detailModel else {return}
             
-            startActivityIndicatorView(for: activityViewForEntiryPage)
+            startActivityIndicatorView()
             
-            detailModel.setRecipeAttributes { [weak self] (error) in
+            detailModel.setRecipeAttributes { [weak self] error in
                 
-                guard error == nil else{
-                    let alert = AlertService.alert(message: error!.localizedDescription)
+                if let error = error {
+                    
+                    let alert = AlertService.alert(message: error.localizedDescription)
                     self?.present(alert, animated: true)
+                    
                     return
                 }
                 
-                self?.nameLabel.text = detailModel.name
+                self?.name.text = detailModel.name
                 self?.difficulty.text = detailModel.difficulty
-                self?.descriptionLabel.text = detailModel.description
+                self?.descriptionText.text = detailModel.description
                 self?.instructionLabel.text = "Instruction: \n"
-                self?.instructionTextLabel.text = detailModel.instruction
-                self?.similarLabel.text = detailModel.similarLabel
+                self?.instructionText.text = detailModel.instruction
+                self?.similarLabel.text = detailModel.hasSimilarRecipes ? "SIMILAR RECIPE:" : ""
                 
                 self?.collectionView.dataSource = self
                 self?.buttonFieldView.dataSource = self
@@ -37,12 +39,9 @@ class DetailViewController: UIViewController {
                 self?.collectionView.reloadData()
                 
                 DispatchQueue.main.async { [weak self] in
-                    
-                    let height = self!.descriptionLabel.frame.height + self!.instructionLabel.frame.height + self!.instructionTextLabel.frame.height + self!.difficulty.frame.height + self!.buttonFieldView.frame.height + 450
-                    
-                    self?.scroll.contentSize = CGSize(width: self!.view.frame.width, height: height)
+                    self?.setScrollConstraints()
+                    self?.stopActivityIndicatorView()
                 }
-                self?.stopActivityIndicatorView(for: self!.activityViewForEntiryPage)
             }
         }
     }
@@ -56,8 +55,7 @@ class DetailViewController: UIViewController {
         
     }
     
-    
-    //MARK: - UI Elements
+    // MARK: - UI Elements
     private var buttonFieldView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -92,9 +90,9 @@ class DetailViewController: UIViewController {
         return collectionView
     }()
     
-    private let activityViewForEntiryPage = UIActivityIndicatorView(style: .large)
+    private let activityView = UIActivityIndicatorView(style: .large)
     
-    private var nameLabel: UILabel = {
+    private var name: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.font = .boldSystemFont(ofSize: 20)
@@ -113,7 +111,7 @@ class DetailViewController: UIViewController {
         return label
     }()
     
-    private let descriptionLabel: UILabel = {
+    private let descriptionText: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.font = .italicSystemFont(ofSize: 17)
@@ -131,7 +129,7 @@ class DetailViewController: UIViewController {
         return label
     }()
     
-    private let instructionTextLabel: UILabel = {
+    private let instructionText: UILabel = {
         let label = UILabel()
         label.textAlignment = .justified
         label.font = .systemFont(ofSize: 17)
@@ -150,10 +148,12 @@ class DetailViewController: UIViewController {
     }()
     
 }
-//MARK: - UITableView Delegate DataSource
+
+// MARK: - UITableView Delegate DataSource
 
 extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         guard let detailModel = detailModel, let numberOfButtons = detailModel.numberOfButtons  else { return 0 }
         buttonFieldView.rowHeight = 60
         let height = buttonFieldView.rowHeight * CGFloat(numberOfButtons)
@@ -163,6 +163,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = buttonFieldView.dequeueReusableCell(withIdentifier: ButtonCell.identifier, for: indexPath) as? ButtonCell
         
         guard let tableCell = cell,
@@ -183,7 +184,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             return
         }
         
-        detailModel.similarRecipePressed(for: indexPath.row) { [weak self] (recipe) in
+        detailModel.similarRecipePressed(for: indexPath.row) { [weak self] recipe in
             
             destinationVC.detailModel = recipe
             self?.navigationController?.pushViewController(destinationVC, animated: true)
@@ -192,35 +193,39 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    private func detailModelError(){
+    private func detailModelError() {
         let alert = AlertService.alert(message: "A critical error occurred, data is lost")
         present(alert, animated: true, completion: nil)
     }
     
 }
 
-
-//MARK: - Collection Part
+// MARK: - Collection Part
 
 extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let detailModel = detailModel else { return 0 }
         
-        return detailModel.numberOfImages!
+        guard let detailModel = detailModel, let numberOfImages = detailModel.numberOfImages else { return 0 }
+        return numberOfImages
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier,
+                                                      for: indexPath) as? CollectionViewCell
         
-        guard let collectionCell = cell, let detailModel = detailModel else { return UICollectionViewCell() }
+        guard let collectionCell = cell,
+              let detailModel = detailModel,
+              let images = detailModel.images else { return UICollectionViewCell() }
         
-        let cellViewModel = detailModel.collectionCellViewModel(for: detailModel.images![indexPath.row])
+        let cellViewModel = detailModel.collectionCellViewModel(for: images[indexPath.row])
         collectionCell.cellModel = cellViewModel
         
         return collectionCell
@@ -229,80 +234,120 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
 }
 
-//MARK: - Constrains and Subviews
+// MARK: - Constrains and Subviews
 
 extension DetailViewController {
-    
     private func addSubviews() {
-        view.addSubview(scroll)
-        view.addSubview(activityViewForEntiryPage)
-        
-        scroll.addSubview(collectionView)
-        scroll.addSubview(nameLabel)
-        scroll.addSubview(descriptionLabel)
-        scroll.addSubview(difficulty)
-        scroll.addSubview(instructionLabel)
-        scroll.addSubview(instructionTextLabel)
-        scroll.addSubview(similarLabel)
-        scroll.addSubview(buttonFieldView)
-        scroll.addSubview(similarLabel)
-        
+        addActivityAndScrollToView()
+        addSubviewsToScrollView()
         setConstrains()
     }
     
-    private func startActivityIndicatorView(for activity: UIActivityIndicatorView) {
-        activity.isHidden = false
-        activity.startAnimating()
+    private func addActivityAndScrollToView() {
+        view.addSubview(scroll)
+        view.addSubview(activityView)
     }
     
-    private func stopActivityIndicatorView(for activity: UIActivityIndicatorView) {
-        activity.stopAnimating()
-        activity.isHidden = true
+    private func addSubviewsToScrollView() {
+        scroll.addSubview(collectionView)
+        scroll.addSubview(name)
+        scroll.addSubview(descriptionText)
+        scroll.addSubview(difficulty)
+        scroll.addSubview(instructionLabel)
+        scroll.addSubview(instructionText)
+        scroll.addSubview(similarLabel)
+        scroll.addSubview(buttonFieldView)
+        scroll.addSubview(similarLabel)
     }
     
+    private func startActivityIndicatorView() {
+        activityView.isHidden = false
+        activityView.startAnimating()
+    }
     
+    private func stopActivityIndicatorView() {
+        activityView.stopAnimating()
+        activityView.isHidden = true
+    }
+
     private func setConstrains() {
-        activityViewForEntiryPage.translatesAutoresizingMaskIntoConstraints = false
-        activityViewForEntiryPage.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        activityViewForEntiryPage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
+        setActivityViewConstraints()
+        setNameLabelConstraints()
+        setDifficultyLabelConstraints()
+        setCollectionViewConstraints()
+        setDescriptionLabelConstraints()
+        setInstructionLabelConstraints()
+        setInstructionTextLabelConstraints()
+        setSimilarLabelConstraints()
+        setButtonFieldViewConstraints()
+  
+    }
+    
+    private func setActivityViewConstraints() {
+        activityView.translatesAutoresizingMaskIntoConstraints = false
+        activityView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        activityView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    }
+    
+    private func setScrollConstraints() {
         scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         scroll.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        scroll.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         
-        nameLabel.heightAnchor.constraint(equalToConstant: 70).isActive = true
-        nameLabel.topAnchor.constraint(equalTo: scroll.topAnchor, constant: -5).isActive = true
-        nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        let height = descriptionText.frame.height +
+            instructionLabel.frame.height +
+            instructionText.frame.height +
+            difficulty.frame.height +
+            buttonFieldView.frame.height + 450
         
-        difficulty.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: -10).isActive = true
+        scroll.contentSize = CGSize(width: view.frame.width, height: height)
+    }
+    
+    private func setNameLabelConstraints() {
+        name.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        name.topAnchor.constraint(equalTo: scroll.topAnchor, constant: -5).isActive = true
+        name.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        name.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+    }
+    
+    private func setDifficultyLabelConstraints() {
+        difficulty.topAnchor.constraint(equalTo: name.bottomAnchor, constant: -10).isActive = true
         difficulty.leadingAnchor.constraint(equalTo: scroll.leadingAnchor, constant: 15).isActive = true
-        
+    }
+    
+    private func setCollectionViewConstraints() {
         collectionView.heightAnchor.constraint(equalToConstant: 300).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: scroll.leadingAnchor, constant: 0).isActive = true
         collectionView.widthAnchor.constraint(equalTo: scroll.widthAnchor).isActive = true
         collectionView.topAnchor.constraint(equalTo: difficulty.bottomAnchor).isActive = true
-        
-        descriptionLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
-        descriptionLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15).isActive = true
-        descriptionLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15).isActive = true
-        
-        instructionLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 10).isActive = true
+    }
+    
+    private func setDescriptionLabelConstraints() {
+        descriptionText.topAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
+        descriptionText.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15).isActive = true
+        descriptionText.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15).isActive = true
+    }
+    
+    private func setInstructionLabelConstraints() {
+        instructionLabel.topAnchor.constraint(equalTo: descriptionText.bottomAnchor, constant: 10).isActive = true
         instructionLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15).isActive = true
-        
-        instructionTextLabel.topAnchor.constraint(equalTo: instructionLabel.bottomAnchor).isActive = true
-        instructionTextLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15).isActive = true
-        instructionTextLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15).isActive = true
-        
-        similarLabel.topAnchor.constraint(equalTo: instructionTextLabel.bottomAnchor, constant: 10).isActive = true
+    }
+    
+    private func setInstructionTextLabelConstraints() {
+        instructionText.topAnchor.constraint(equalTo: instructionLabel.bottomAnchor).isActive = true
+        instructionText.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 15).isActive = true
+        instructionText.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15).isActive = true
+    }
+    
+    private func setSimilarLabelConstraints() {
+        similarLabel.topAnchor.constraint(equalTo: instructionText.bottomAnchor, constant: 10).isActive = true
         similarLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
         similarLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
-        
+    }
+    private func setButtonFieldViewConstraints() {
         buttonFieldView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
         buttonFieldView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
         buttonFieldView.topAnchor.constraint(equalTo: similarLabel.bottomAnchor, constant: 10).isActive = true
         buttonFieldView.register(ButtonCell.self, forCellReuseIdentifier: ButtonCell.identifier)
-        
     }
 }
