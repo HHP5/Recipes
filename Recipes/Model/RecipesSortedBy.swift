@@ -12,5 +12,5 @@ enum RecipesSortedBy: String {
     case name = "Name"
     case lastUpdateDescending = "Last Update ↓"
     case lastUpdateAscending = "Last Update ↑"
-    
+    case none
 }

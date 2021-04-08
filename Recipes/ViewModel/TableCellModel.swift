@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class TableCellModel: TableCellModelType {
-    
     private var recipe: Recipe
     
     var name: String {

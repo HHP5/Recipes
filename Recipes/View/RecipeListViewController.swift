@@ -159,6 +159,7 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension RecipeListViewController: UISearchBarDelegate {
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
 
         if let searchText = searchBar.text?.lowercased() {

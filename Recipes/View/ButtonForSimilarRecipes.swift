@@ -38,14 +38,18 @@ class ButtonCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         addSubview(similarRecipeNameLabel)
+        setConstraints()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setConstraints() {
         similarRecipeNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         similarRecipeNameLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         similarRecipeNameLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
         similarRecipeNameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 50).isActive = true
         similarRecipeNameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50).isActive = true
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

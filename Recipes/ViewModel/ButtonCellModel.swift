@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 class ButtonCellModel: ButtonCellModelType {
     var name: String
 
