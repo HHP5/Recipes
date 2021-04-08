@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
-    private var recipes: [Recipe]?
-    var recipesForPrint: [Recipe] = []
-    private var sortAttribute: RecipesSortedBy = .none
+    private var fetchedRecipes: [Recipe]?
+    var recipes: [Recipe] = []
+    private var sortBy: RecipesSortedBy = .none
     
     func fetchingData(completion: @escaping(NetworkError?) -> Void) {
         ServiceLayer.request(router: Router.allRecipes) { [weak self] (result: Result<RecipeListResponse, Error>) in
@@ -20,8 +20,8 @@ class RecipeListViewModel: RecipeListViewModelType {
             
             case .success(let result):
                 
+                self?.fetchedRecipes = result.recipes
                 self?.recipes = result.recipes
-                self?.recipesForPrint = result.recipes
                 
                 completion(nil)
                 
@@ -34,18 +34,18 @@ class RecipeListViewModel: RecipeListViewModelType {
     }
     
     var numberOfRow: Int {
-        return recipesForPrint.count
+        return recipes.count
     }
     
     // Реализация сортировки
     func sortArray(by attribute: RecipesSortedBy) {
-        sortAttribute = attribute
-        recipesForPrint = sortingArray(for: recipesForPrint)
+        sortBy = attribute
+        recipes = sortingArray(for: recipes)
     }
     
     // Реализация поиска
     func searchBarSearchButtonClicked(for searchText: String) {
-        recipesForPrint = sortingArray(for: recipes).filter { recipe in
+        recipes = sortingArray(for: fetchedRecipes).filter { recipe in
             
             let searchByName = recipe.name.lowercased().contains(searchText)
             let searchByDescription = recipe.description?.lowercased().contains(searchText) ?? false
@@ -56,23 +56,23 @@ class RecipeListViewModel: RecipeListViewModelType {
     }
     
     func searchBarCancelButtonClicked() {
-        recipesForPrint = sortingArray(for: recipes)
+        recipes = sortingArray(for: fetchedRecipes)
     }
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> TableCellModelType? {
-        let recipe = recipesForPrint[indexPath.row]
+        let recipe = recipes[indexPath.row]
         return TableCellModel(recipe: recipe)
     }
     
     func didSelectRow(at index: Int) -> DetailViewModelType {
-        let selectedRecipe = recipesForPrint[index]
+        let selectedRecipe = recipes[index]
         return DetailViewModel(uuid: selectedRecipe.uuid)
     }
     
     private func sortingArray(for recipes: [Recipe]?) -> [Recipe] {
         guard let recipes = recipes else { return [] }
 
-        switch sortAttribute {
+        switch sortBy {
         case .lastUpdateDescending:
             return recipes.sorted(by: { $0.lastUpdated > $1.lastUpdated })
         case .lastUpdateAscending:

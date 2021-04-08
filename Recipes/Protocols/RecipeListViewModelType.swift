@@ -12,7 +12,7 @@ protocol RecipeListViewModelType{
     
     var numberOfRow: Int {get}
     
-    var recipesForPrint: [Recipe] {get set}
+    var recipes: [Recipe] {get set}
 
     func sortArray(by attribute: RecipesSortedBy)
 
