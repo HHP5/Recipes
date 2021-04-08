@@ -10,7 +10,6 @@ import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
     private var recipes: [Recipe]?
-    private var sortedArray: [Recipe] = []
     var recipesForPrint: [Recipe] = []
     private var sortAttribute: RecipesSortedBy = .none
     
@@ -23,7 +22,6 @@ class RecipeListViewModel: RecipeListViewModelType {
                 
                 self?.recipes = result.recipes
                 self?.recipesForPrint = result.recipes
-                self?.sortedArray = result.recipes
                 
                 completion(nil)
                 
@@ -42,12 +40,12 @@ class RecipeListViewModel: RecipeListViewModelType {
     // Реализация сортировки
     func sortArray(by attribute: RecipesSortedBy) {
         sortAttribute = attribute
-        sortingArray(for: recipesForPrint)
+        recipesForPrint = sortingArray(for: recipesForPrint)
     }
     
     // Реализация поиска
     func searchBarSearchButtonClicked(for searchText: String) {
-        recipesForPrint = recipesForPrint.filter { recipe in
+        recipesForPrint = sortingArray(for: recipes).filter { recipe in
             
             let searchByName = recipe.name.lowercased().contains(searchText)
             let searchByDescription = recipe.description?.lowercased().contains(searchText) ?? false
@@ -58,8 +56,7 @@ class RecipeListViewModel: RecipeListViewModelType {
     }
     
     func searchBarCancelButtonClicked() {
-        guard let recipes = recipes else { return  }
-        sortingArray(for: recipes)
+        recipesForPrint = sortingArray(for: recipes)
     }
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> TableCellModelType? {
@@ -72,17 +69,18 @@ class RecipeListViewModel: RecipeListViewModelType {
         return DetailViewModel(uuid: selectedRecipe.uuid)
     }
     
-    private func sortingArray(for recipes: [Recipe]) {
+    private func sortingArray(for recipes: [Recipe]?) -> [Recipe] {
+        guard let recipes = recipes else { return [] }
 
         switch sortAttribute {
         case .lastUpdateDescending:
-            recipesForPrint = recipes.sorted(by: { $0.lastUpdated > $1.lastUpdated })
+            return recipes.sorted(by: { $0.lastUpdated > $1.lastUpdated })
         case .lastUpdateAscending:
-            recipesForPrint = recipes.sorted(by: { $0.lastUpdated < $1.lastUpdated })
+            return recipes.sorted(by: { $0.lastUpdated < $1.lastUpdated })
         case .name:
-            recipesForPrint = recipes.sorted(by: { $0.name < $1.name })
+            return recipes.sorted(by: { $0.name < $1.name })
         case .none:
-            recipesForPrint = recipes
+            return recipes
         }
     }
 }
