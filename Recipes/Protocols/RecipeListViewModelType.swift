@@ -8,8 +8,7 @@
 import Foundation
 import UIKit
 
-protocol RecipeListViewModelType{
-    
+protocol RecipeListViewModelType {
     var numberOfRow: Int {get}
     
     var recipes: [Recipe] {get set}
@@ -24,5 +23,5 @@ protocol RecipeListViewModelType{
     
     func didSelectRow(at index: Int) -> DetailViewModelType
 
-    func fetchingData(completion: @escaping (NetworkError?)->())
+    func fetchingData(completion: @escaping (NetworkError?) -> Void)
 }

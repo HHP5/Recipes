@@ -8,7 +8,6 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-    
     var detailModel: DetailViewModelType? {
         willSet(detailModel) {
             guard let detailModel = detailModel else {return}
@@ -179,23 +178,12 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         
         let destinationVC = DetailViewController()
         
-        guard let detailModel = detailModel else {
-            detailModelError()
-            return
-        }
+        guard let detailModel = detailModel else { return }
         
-        detailModel.similarRecipePressed(for: indexPath.row) { [weak self] recipe in
-            
-            destinationVC.detailModel = recipe
-            self?.navigationController?.pushViewController(destinationVC, animated: true)
-            self?.buttonFieldView.deselectRow(at: indexPath, animated: true)
-            
-        }
-    }
-    
-    private func detailModelError() {
-        let alert = AlertService.alert(message: "A critical error occurred, data is lost")
-        present(alert, animated: true, completion: nil)
+        let similarRecipe = detailModel.similarRecipePressed(for: indexPath.row)
+        destinationVC.detailModel = similarRecipe
+        navigationController?.pushViewController(destinationVC, animated: true)
+        buttonFieldView.deselectRow(at: indexPath, animated: true)
     }
     
 }

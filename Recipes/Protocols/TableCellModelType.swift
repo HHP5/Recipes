@@ -7,8 +7,7 @@
 
 import Foundation
 
-protocol TableCellModelType: class{
-    
+protocol TableCellModelType: class {
     var name: String {get}
     
     var description: String {get}

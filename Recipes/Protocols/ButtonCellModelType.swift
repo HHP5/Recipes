@@ -8,7 +8,6 @@
 import Foundation
 
 protocol ButtonCellModelType: class {
-    
     var name: String {get}
     
 }

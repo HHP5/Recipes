@@ -25,5 +25,3 @@ struct Recipe: Codable {
     let difficulty: Int
     var similar: [SimilarRecipes]?
 }
-
-

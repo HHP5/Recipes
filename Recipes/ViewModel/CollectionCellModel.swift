@@ -19,15 +19,10 @@ class CollectionCellModel: CollectionCellModelType {
     var totalNumberImages: Int {
         return images.count
     }
-
-    var currentImage: Int {
-        var result = 0
-        for x in 0...images.count - 1 where images.count > 1 {
-            if images[x].contains(imageURLString) {
-                result = x + 1
-            }
-        }
-        return result
+    
+    var currentImageIndex: Int {
+        let imageIndex = images.firstIndex { $0.contains(imageURLString)} ?? 0
+        return imageIndex + 1
     }
 
     init(imageURL: String, images: [String]) {

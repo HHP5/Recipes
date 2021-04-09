@@ -7,8 +7,7 @@
 
 import Foundation
 
-protocol DetailViewModelType: class{
-    
+protocol DetailViewModelType: class {
     var numberOfImages: Int? {get}
     
     var name: String? {get}
@@ -27,7 +26,8 @@ protocol DetailViewModelType: class{
         
     func setRecipeAttributes(completion: @escaping (NetworkError?) -> Void)
 
-    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType) -> Void)
+//    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType) -> Void)
+    func similarRecipePressed(for index: Int) -> DetailViewModelType? 
     
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType?
     

@@ -9,7 +9,6 @@ import UIKit
 import Kingfisher
 
 class TableViewCell: UITableViewCell {
-
     static let identifier = "MainPageCell"
 
     var cellModel: TableCellModelType? {

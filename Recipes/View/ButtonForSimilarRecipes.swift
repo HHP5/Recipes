@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 class ButtonCell: UITableViewCell {
     static let identifier = "ButtonForSimilarRecipesCell"
 

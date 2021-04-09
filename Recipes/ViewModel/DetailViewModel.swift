@@ -45,16 +45,10 @@ class DetailViewModel: DetailViewModelType {
         }
     }
 
-    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType) -> Void) {
+    func similarRecipePressed(for index: Int) -> DetailViewModelType? {
 
-        guard let similarRecipe = similarRecipes,
-            let recipe = similarRecipes?[index].name else { return }
-
-        similarRecipe.forEach { selectedRecipe in
-            if selectedRecipe.name == recipe {
-                completion(DetailViewModel(uuid: selectedRecipe.uuid))
-            }
-        }
+        guard let recipe = similarRecipes?[index] else { return nil}
+        return DetailViewModel(uuid: recipe.uuid)
     }
 
     // Передает массив изображений (для ведения подсчета) и изображение для отображения

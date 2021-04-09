@@ -15,7 +15,7 @@ class CollectionViewCell: UICollectionViewCell {
         willSet(cellModel) {
 
             guard let imageURL = cellModel?.imageURL,
-                let currentImage = cellModel?.currentImage,
+                let currentImageIndex = cellModel?.currentImageIndex,
                 let totalCountImages = cellModel?.totalNumberImages
                 else { return }
             
@@ -24,7 +24,7 @@ class CollectionViewCell: UICollectionViewCell {
             imageFood.contentMode = .scaleAspectFit
             
             countImageLabel.isHidden = totalCountImages > 1 ? false : true
-            countImageLabel.text = "\(currentImage) / \(totalCountImages)"
+            countImageLabel.text = "\(currentImageIndex) / \(totalCountImages)"
         }
     }
     // MARK: - UI Elements

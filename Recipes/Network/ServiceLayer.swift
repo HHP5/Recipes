@@ -8,63 +8,59 @@
 import Foundation
 
 class ServiceLayer {
-    
-//    class func request<T: Codable>(router: Router, completion: @escaping (Result<[String: T], NetworkError>) -> ()) {
-    class func request<T: Codable>(router: Router, completion: @escaping (Result<T,Error>) -> ()) {
-
+    class func request<T: Codable>(router: Router, completion: @escaping (Result<T, Error>) -> Void) {
         var components = URLComponents()
         
         components.scheme = router.scheme
         components.host = router.host
         components.path = router.path
         
-        if let url = components.url{
+        guard let url = components.url else {
+            completion(.failure(NetworkError.badURL))
+            return
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = router.method
+        
+        let session = URLSession(configuration: .default)
+        let dataTask = session.dataTask(with: urlRequest) { data, response, error in
             
-            var urlRequest = URLRequest(url: url)
-            urlRequest.httpMethod = router.method
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
             
-            let session = URLSession(configuration: .default)
-            let dataTask = session.dataTask(with: urlRequest) { data, response, error in
+            if let result = response as? HTTPURLResponse {
                 
-                guard error == nil else {
+                guard result.hasSuccessStatusCode else {
                     
-                    completion(.failure(NetworkError.clientError))
+                    let code = result.handleHTTPStatusCode()
+                    completion(.failure(code))
                     return
                     
                 }
                 
-                if let result = response as? HTTPURLResponse{
+                guard let data = data else {
                     
-                    let code = result.handleHTTPStatusCode()
-
-                    if code == .none {
-                        
-                        guard let data = data else {
-                            
-                            completion(.failure(NetworkError.noData))
-                            return
-                        }
-                        
-                        do{
-                            
-                            let responseObject = try JSONDecoder().decode(T.self, from: data)
-                            
-                            DispatchQueue.main.async {completion(.success(responseObject))}
-                            
-                        }catch{
-                            
-                            completion(.failure(NetworkError.dataDecodingError))
-                            
-                        }
-                        
-                    }else{
-                        
-                        completion(.failure(code))
-                    }
+                    completion(.failure(NetworkError.noData))
+                    return
                 }
+                
+                do {
+                    
+                    let responseObject = try JSONDecoder().decode(T.self, from: data)
+                    
+                    DispatchQueue.main.async {completion(.success(responseObject))}
+                    
+                } catch {
+                    
+                    completion(.failure(NetworkError.dataDecodingError))
+                    
+                }
+                
             }
-            dataTask.resume()
         }
+        dataTask.resume()
     }
 }
-
