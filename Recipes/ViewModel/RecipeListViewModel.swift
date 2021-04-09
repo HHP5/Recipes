@@ -23,11 +23,11 @@ class RecipeListViewModel: RecipeListViewModelType {
                 self?.fetchedRecipes = result.recipes
                 self?.recipes = result.recipes
                 
-                completion(nil)
+                DispatchQueue.main.async { completion(nil) }
                 
             case .failure(let error):
                 
-                completion(error as? NetworkError)
+                DispatchQueue.main.async {completion(error as? NetworkError)}
                 
             }
         }
@@ -71,7 +71,7 @@ class RecipeListViewModel: RecipeListViewModelType {
     
     private func sortingArray(for recipes: [Recipe]?) -> [Recipe] {
         guard let recipes = recipes else { return [] }
-
+        
         switch sortBy {
         case .lastUpdateDescending:
             return recipes.sorted(by: { $0.lastUpdated > $1.lastUpdated })
