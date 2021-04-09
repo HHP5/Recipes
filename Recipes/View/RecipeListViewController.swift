@@ -16,7 +16,7 @@ class RecipeListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         tableView.delegate = self
         tableView.dataSource = self
         setNavBar()
@@ -37,7 +37,6 @@ class RecipeListViewController: UIViewController {
             self?.stopActivityIndicator()
             
         }
-        
     }
     
     func setActivityIndicator() {
@@ -147,8 +146,8 @@ extension RecipeListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let destinationVC = DetailViewController()
-        destinationVC.detailModel = viewModel.didSelectRow(at: indexPath.row)
+        let recipe = viewModel.didSelectRow(at: indexPath.row)
+        let destinationVC = DetailViewController(detailModel: recipe)
         navigationController?.pushViewController(destinationVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -170,7 +169,6 @@ extension RecipeListViewController: UISearchBarDelegate {
                 
             }
             tableView.reloadData()
-            
         }
     }
     

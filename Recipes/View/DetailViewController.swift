@@ -8,41 +8,17 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-    var detailModel: DetailViewModelType? {
-        willSet(detailModel) {
-            guard let detailModel = detailModel else {return}
-            
-            startActivityIndicatorView()
-            
-            detailModel.setRecipeAttributes { [weak self] error in
-                
-                if let error = error {
-                    
-                    let alert = AlertService.alert(message: error.localizedDescription)
-                    self?.present(alert, animated: true)
-                    
-                    return
-                }
-                
-                self?.name.text = detailModel.name
-                self?.difficulty.text = detailModel.difficulty
-                self?.descriptionText.text = detailModel.description
-                self?.instructionLabel.text = "Instruction: \n"
-                self?.instructionText.text = detailModel.instruction
-                self?.similarLabel.text = detailModel.hasSimilarRecipes ? "SIMILAR RECIPE:" : ""
-                
-                self?.collectionView.dataSource = self
-                self?.buttonFieldView.dataSource = self
-                
-                self?.buttonFieldView.reloadData()
-                self?.collectionView.reloadData()
-                
-                DispatchQueue.main.async { [weak self] in
-                    self?.setScrollConstraints()
-                    self?.stopActivityIndicatorView()
-                }
-            }
-        }
+    var detailModel: DetailViewModelType
+    
+    init(detailModel: DetailViewModelType) {
+        self.detailModel = detailModel
+        super.init(nibName: nil, bundle: nil)
+        handleResult(detailModel)
+
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -54,7 +30,43 @@ class DetailViewController: UIViewController {
         
     }
     
+    private func handleResult(_ detailModel: DetailViewModelType) {
+        
+        startActivityIndicatorView()
+        
+        detailModel.setRecipeAttributes { [weak self] error in
+            
+            if let error = error {
+                
+                let alert = AlertService.alert(message: error.localizedDescription)
+                self?.present(alert, animated: true)
+                
+                return
+            }
+            
+            self?.name.text = detailModel.name
+            self?.difficulty.text = detailModel.difficulty
+            self?.descriptionText.text = detailModel.description
+            self?.instructionLabel.text = "Instruction: \n"
+            self?.instructionText.text = detailModel.instruction
+            self?.similarLabel.text = detailModel.hasSimilarRecipes ? "SIMILAR RECIPE:" : ""
+            
+            self?.collectionView.dataSource = self
+            self?.buttonFieldView.dataSource = self
+            
+            self?.buttonFieldView.reloadData()
+            self?.collectionView.reloadData()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.setScrollConstraints()
+                self?.stopActivityIndicatorView()
+            }
+        }
+        
+    }
+    
     // MARK: - UI Elements
+    
     private var buttonFieldView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -153,7 +165,8 @@ class DetailViewController: UIViewController {
 extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        guard let detailModel = detailModel, let numberOfButtons = detailModel.numberOfButtons  else { return 0 }
+        guard let numberOfButtons = detailModel.numberOfButtons  else { return 0 }
+        
         buttonFieldView.rowHeight = 60
         let height = buttonFieldView.rowHeight * CGFloat(numberOfButtons)
         buttonFieldView.heightAnchor.constraint(equalToConstant: height).isActive = true
@@ -165,8 +178,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cell = buttonFieldView.dequeueReusableCell(withIdentifier: ButtonCell.identifier, for: indexPath) as? ButtonCell
         
-        guard let tableCell = cell,
-              let detailModel = detailModel else { return UITableViewCell() }
+        guard let tableCell = cell else { return UITableViewCell() }
         
         let tableModel = detailModel.tableCellModel(for: indexPath.row)
         tableCell.cellModel = tableModel
@@ -176,12 +188,8 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let destinationVC = DetailViewController()
-        
-        guard let detailModel = detailModel else { return }
-        
-        let similarRecipe = detailModel.similarRecipePressed(for: indexPath.row)
-        destinationVC.detailModel = similarRecipe
+        guard let similarRecipe = detailModel.similarRecipePressed(for: indexPath.row) else {return}
+        let destinationVC = DetailViewController(detailModel: similarRecipe)
         navigationController?.pushViewController(destinationVC, animated: true)
         buttonFieldView.deselectRow(at: indexPath, animated: true)
     }
@@ -200,7 +208,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        guard let detailModel = detailModel, let numberOfImages = detailModel.numberOfImages else { return 0 }
+        guard let numberOfImages = detailModel.numberOfImages else { return 0 }
         return numberOfImages
     }
     
@@ -210,7 +218,6 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
                                                       for: indexPath) as? CollectionViewCell
         
         guard let collectionCell = cell,
-              let detailModel = detailModel,
               let images = detailModel.images else { return UICollectionViewCell() }
         
         let cellViewModel = detailModel.collectionCellViewModel(for: images[indexPath.row])
@@ -257,7 +264,7 @@ extension DetailViewController {
         activityView.stopAnimating()
         activityView.isHidden = true
     }
-
+    
     private func setConstrains() {
         setActivityViewConstraints()
         setNameLabelConstraints()
@@ -268,7 +275,7 @@ extension DetailViewController {
         setInstructionTextLabelConstraints()
         setSimilarLabelConstraints()
         setButtonFieldViewConstraints()
-  
+        
     }
     
     private func setActivityViewConstraints() {

@@ -13,7 +13,7 @@ class RecipeListViewModel: RecipeListViewModelType {
     var recipes: [Recipe] = []
     private var sortBy: RecipesSortedBy = .none
     
-    func fetchingData(completion: @escaping(NetworkError?) -> Void) {
+    func fetchingData(completion: @escaping(Error?) -> Void) {
         ServiceLayer.request(router: Router.allRecipes) { [weak self] (result: Result<RecipeListResponse, Error>) in
             
             switch result {
@@ -27,7 +27,7 @@ class RecipeListViewModel: RecipeListViewModelType {
                 
             case .failure(let error):
                 
-                DispatchQueue.main.async {completion(error as? NetworkError)}
+                DispatchQueue.main.async {completion(error)}
                 
             }
         }
