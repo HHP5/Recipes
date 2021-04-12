@@ -13,9 +13,9 @@ class RecipeListViewModel: RecipeListViewModelType {
     var recipes: [Recipe] = []
     private var sortBy: RecipesSortedBy = .none
     
-    func fetchingData(completion: @escaping(Error?) -> Void) {
+    func fetchingData(completion: @escaping (Error?) -> Void) {
         ServiceLayer.request(router: Router.allRecipes) { [weak self] (result: Result<RecipeListResponse, Error>) in
-            
+                        
             switch result {
             
             case .success(let result):
@@ -23,12 +23,12 @@ class RecipeListViewModel: RecipeListViewModelType {
                 self?.fetchedRecipes = result.recipes
                 self?.recipes = result.recipes
                 
-                DispatchQueue.main.async { completion(nil) }
+                DispatchQueue.main.async {completion(nil)}
                 
             case .failure(let error):
                 
-                DispatchQueue.main.async {completion(error)}
-                
+                DispatchQueue.main.async { completion(error) }
+            
             }
         }
     }
