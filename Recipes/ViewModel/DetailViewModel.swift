@@ -25,7 +25,7 @@ class DetailViewModel: DetailViewModelType {
     var similarRecipes: [SimilarRecipes]?
     var hasSimilarRecipes: Bool = false
 
-    func setRecipeAttributes(completion: @escaping (NetworkError?) -> Void) {
+    func setRecipeAttributes(completion: @escaping (Error?) -> Void) {
 
         ServiceLayer.request(router: Router.recipe(uuid: uuid)) { [weak self] (result: Result<RecipeResponse, Error>) in
 
@@ -39,7 +39,7 @@ class DetailViewModel: DetailViewModelType {
 
             case .failure(let error):
                 
-                completion(error as? NetworkError)
+                completion(error)
                 
             }
         }

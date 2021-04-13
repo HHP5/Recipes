@@ -16,27 +16,34 @@ class RecipeListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        viewModel.fetchingData()
+
         tableView.delegate = self
         tableView.dataSource = self
         setNavBar()
         setActivityIndicator()
-        
-        viewModel.fetchingData { [weak self] error in
-            
-            if let error = error {
-                
-                let alert = AlertService.alert(message: error.localizedDescription)
-                self?.present(alert, animated: true)
-                
-                return
-            }
-            
-            self?.setTableView()
-            self?.tableView.reloadData()
-            self?.stopActivityIndicator()
-            
+
+        viewModel.didStartRequest = { [weak self] in
+            self?.startActivityIndicator()
         }
+        
+        viewModel.didFinishRequest = { [weak self] in
+            self?.stopActivityIndicator()
+            self?.setTableView()
+        }
+
+        viewModel.didUpdateData = { [weak self]  in
+            self?.tableView.reloadData()
+        }
+
+        viewModel.didReceiveError = { [weak self] error in
+
+            let alert = AlertService.alert(message: error.localizedDescription)
+            self?.present(alert, animated: true)
+
+            return
+        }
+
     }
     
     func setActivityIndicator() {
@@ -45,8 +52,6 @@ class RecipeListViewController: UIViewController {
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        startActivityIndicator()
     }
     
     private func startActivityIndicator() {

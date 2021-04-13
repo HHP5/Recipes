@@ -24,12 +24,12 @@ protocol DetailViewModelType: class {
         
     var hasSimilarRecipes: Bool {get}
         
-    func setRecipeAttributes(completion: @escaping (NetworkError?) -> Void)
+    func setRecipeAttributes(completion: @escaping (Error?) -> Void)
 
-//    func similarRecipePressed(for index: Int, completion: @escaping (DetailViewModelType) -> Void)
-    func similarRecipePressed(for index: Int) -> DetailViewModelType? 
+    func similarRecipePressed(for index: Int) -> DetailViewModelType?
     
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType?
     
     func tableCellModel(for index: Int) -> ButtonCellModelType?
+
 }

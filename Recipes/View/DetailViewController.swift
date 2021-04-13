@@ -43,7 +43,7 @@ class DetailViewController: UIViewController {
                 
                 return
             }
-            
+                        
             self?.name.text = detailModel.name
             self?.difficulty.text = detailModel.difficulty
             self?.descriptionText.text = detailModel.description
@@ -62,7 +62,6 @@ class DetailViewController: UIViewController {
                 self?.stopActivityIndicatorView()
             }
         }
-        
     }
     
     // MARK: - UI Elements

@@ -23,6 +23,14 @@ protocol RecipeListViewModelType {
     
     func didSelectRow(at index: Int) -> DetailViewModelType
 
-    func fetchingData(completion: @escaping (Error?) -> Void)
+    func fetchingData()
+
+    var didStartRequest: (() -> Void)? {get}
+    
+    var didFinishRequest: (() -> Void)? {get}
+    
+    var didUpdateData: (() -> Void)? {get}
+    
+    var didReceiveError: ((Error) -> Void)? {get}
 
 }

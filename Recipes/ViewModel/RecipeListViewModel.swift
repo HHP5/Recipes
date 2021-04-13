@@ -9,26 +9,47 @@ import Foundation
 import UIKit
 
 class RecipeListViewModel: RecipeListViewModelType {
+    var didStartRequest: (() -> Void)?
+    
+    var didFinishRequest: (() -> Void)?
+    
+    var didUpdateData: (() -> Void)?
+    
+    var didReceiveError: ((Error) -> Void)?
+    
     private var fetchedRecipes: [Recipe]?
     var recipes: [Recipe] = []
     private var sortBy: RecipesSortedBy = .none
     
-    func fetchingData(completion: @escaping (Error?) -> Void) {
+    func fetchingData() {
+        didStartRequest?()
         ServiceLayer.request(router: Router.allRecipes) { [weak self] (result: Result<RecipeListResponse, Error>) in
-                        
-            switch result {
             
+            self?.didFinishRequest?()
+
+            switch result {
             case .success(let result):
                 
                 self?.fetchedRecipes = result.recipes
                 self?.recipes = result.recipes
-                
-                DispatchQueue.main.async {completion(nil)}
+                                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+                    self?.didUpdateData?()
+                })
+//                }) {
+//
+//                    self?.didUpdateData?()
+//
+//                }
                 
             case .failure(let error):
                 
-                DispatchQueue.main.async { completion(error) }
-            
+                DispatchQueue.main.async {
+                    
+                    self?.didReceiveError?(error)
+                    
+                }
+                
             }
         }
     }
