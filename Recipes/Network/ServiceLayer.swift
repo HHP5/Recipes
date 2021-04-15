@@ -22,8 +22,9 @@ class ServiceLayer {
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = router.method
-        
+		
         let session = URLSession(configuration: .default)
+
 		let dataTask = session.dataTask(with: urlRequest) { [self] data, response, error in
             
             if let error = error {
@@ -36,12 +37,8 @@ class ServiceLayer {
 				
 				case 200...299:
 										
-					DispatchQueue.main.async {
+					DispatchQueue.main.async { completion(handleData(T.self, data: data)) }
 						
-						completion(handleData(T.self, data: data))
-						
-					}
-
 				default:
 					
 					completion(.failure(result.handleHTTPStatusCode()))
