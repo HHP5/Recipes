@@ -21,7 +21,8 @@ class TableCellModel: TableCellModelType {
     }
     
     var imageURL: URL? {
-        return URL(string: recipe.images[0])
+		guard let url = recipe.images.first else {return nil}
+		return URL(string: url)
     }
     
     init(recipe: Recipe) {

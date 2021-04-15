@@ -12,40 +12,48 @@ class RecipeListViewController: UIViewController {
     private var tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     
-    private var viewModel = RecipeListViewModel()
+	private var viewModel: RecipeListViewModelType!
     
+	required convenience init(viewModel: RecipeListViewModelType) {
+		self.init(nibName: nil, bundle: nil)
+		
+		self.viewModel = viewModel
+		viewModel.fetchingRecipes()
+		bindToViewModel()
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.fetchingData()
 
         tableView.delegate = self
         tableView.dataSource = self
         setNavBar()
         setActivityIndicator()
-
-        viewModel.didStartRequest = { [weak self] in
-            self?.startActivityIndicator()
-        }
-        
-        viewModel.didFinishRequest = { [weak self] in
-            self?.stopActivityIndicator()
-            self?.setTableView()
-        }
-
-        viewModel.didUpdateData = { [weak self]  in
-            self?.tableView.reloadData()
-        }
-
-        viewModel.didReceiveError = { [weak self] error in
-
-            let alert = AlertService.alert(message: error.localizedDescription)
-            self?.present(alert, animated: true)
-
-            return
-        }
-
     }
     
+	private func bindToViewModel() {
+		viewModel.didStartRequest = { [weak self] in
+			self?.startActivityIndicator()
+		}
+		
+		viewModel.didFinishRequest = { [weak self] in
+			self?.stopActivityIndicator()
+			self?.setTableView()
+		}
+
+		viewModel.didUpdateData = { [weak self]  in
+			self?.tableView.reloadData()
+		}
+
+		viewModel.didReceiveError = { [weak self] error in
+
+			let alert = AlertService.alert(message: error.localizedDescription)
+			self?.present(alert, animated: true)
+
+			return
+		}
+	}
+	
     func setActivityIndicator() {
         view.backgroundColor = .white
         view.addSubview(activityIndicator)
@@ -93,17 +101,17 @@ class RecipeListViewController: UIViewController {
     
     @objc func handleShowSortItems() {
         let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
-        let sortByDateAscending = UIAlertAction(title: RecipesSortedBy.lastUpdateDescending.rawValue,
+		let sortByDateAscending = UIAlertAction(title: RecipesSortedType.lastUpdateAscending.title,
                                                 style: .default) { [weak self] _ in
             self?.viewModel.sortArray(by: .lastUpdateDescending)
             self?.tableView.reloadData()
         }
-        let sortByDateDescending = UIAlertAction(title: RecipesSortedBy.lastUpdateAscending.rawValue,
+        let sortByDateDescending = UIAlertAction(title: RecipesSortedType.lastUpdateAscending.title,
                                                  style: .default) { [weak self] _ in
             self?.viewModel.sortArray(by: .lastUpdateAscending)
             self?.tableView.reloadData()
         }
-        let sortByName = UIAlertAction(title: RecipesSortedBy.name.rawValue, style: .default) { [weak self] _ in
+        let sortByName = UIAlertAction(title: RecipesSortedType.name.title, style: .default) { [weak self] _ in
             self?.viewModel.sortArray(by: .name)
             self?.tableView.reloadData()
         }

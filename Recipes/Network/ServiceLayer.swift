@@ -30,36 +30,37 @@ class ServiceLayer {
                 completion(.failure(error))
                 return
             }
-            
-            if let result = response as? HTTPURLResponse {
-                
-                guard result.hasSuccessStatusCode else {
-                    
-                    let code = result.handleHTTPStatusCode()
-                    completion(.failure(code))
-                    return
-                    
-                }
-                
-                guard let data = data else {
-                    
-                    completion(.failure(NetworkError.noData))
-                    return
-                }
-                
-                do {
-                    
-                    let responseObject = try JSONDecoder().decode(T.self, from: data)
-                    
-                    DispatchQueue.main.async {completion(.success(responseObject))}
-                    
-                } catch {
-                    
-                    completion(.failure(NetworkError.dataDecodingError))
-                    
-                }
-                
-            }
+			if let result = response as? HTTPURLResponse {
+				
+				switch result.statusCode {
+				
+				case 200...299:
+					
+					guard let data = data else {
+						
+						completion(.failure(NetworkError.noData))
+						return
+					}
+					
+					do {
+						
+						let responseObject = try JSONDecoder().decode(T.self, from: data)
+						
+						DispatchQueue.main.async {completion(.success(responseObject))}
+						
+					} catch {
+						
+						completion(.failure(NetworkError.dataDecodingError))
+						return
+					}
+					
+				default:
+					
+					completion(.failure(result.handleHTTPStatusCode()))
+					return
+					
+				}
+			}
         }
         dataTask.resume()
     }

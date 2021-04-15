@@ -17,12 +17,13 @@ class RecipeListViewModel: RecipeListViewModelType {
     
     var didReceiveError: ((Error) -> Void)?
     
-    private var fetchedRecipes: [Recipe]?
+    private var fetchedRecipes: [Recipe] = []
     var recipes: [Recipe] = []
-    private var sortBy: RecipesSortedBy = .none
+    private var sortBy: RecipesSortedType = .none
     
-    func fetchingData() {
+    func fetchingRecipes() {
         didStartRequest?()
+		
         ServiceLayer.request(router: Router.allRecipes) { [weak self] (result: Result<RecipeListResponse, Error>) in
             
             self?.didFinishRequest?()
@@ -36,11 +37,6 @@ class RecipeListViewModel: RecipeListViewModelType {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
                     self?.didUpdateData?()
                 })
-//                }) {
-//
-//                    self?.didUpdateData?()
-//
-//                }
                 
             case .failure(let error):
                 
@@ -59,7 +55,7 @@ class RecipeListViewModel: RecipeListViewModelType {
     }
     
     // Реализация сортировки
-    func sortArray(by attribute: RecipesSortedBy) {
+    func sortArray(by attribute: RecipesSortedType) {
         sortBy = attribute
         recipes = sortingArray(for: recipes)
     }
@@ -90,8 +86,7 @@ class RecipeListViewModel: RecipeListViewModelType {
         return DetailViewModel(uuid: selectedRecipe.uuid)
     }
     
-    private func sortingArray(for recipes: [Recipe]?) -> [Recipe] {
-        guard let recipes = recipes else { return [] }
+    private func sortingArray(for recipes: [Recipe]) -> [Recipe] {
         
         switch sortBy {
         case .lastUpdateDescending:

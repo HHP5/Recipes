@@ -8,17 +8,15 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-    var detailModel: DetailViewModelType
+    private var detailModel: DetailViewModelType!
     
-    init(detailModel: DetailViewModelType) {
-        self.detailModel = detailModel
-        super.init(nibName: nil, bundle: nil)
-        handleResult(detailModel)
+	required convenience init(detailModel: DetailViewModelType) {
+		self.init(nibName: nil, bundle: nil)
 
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.detailModel = detailModel
+
+		detailModel.fetcingRecipe()
+		self.bindToDetailModel()
     }
     
     override func viewDidLoad() {
@@ -27,42 +25,44 @@ class DetailViewController: UIViewController {
         collectionView.delegate = self
         buttonFieldView.delegate = self
         addSubviews()
-        
+		startActivityIndicatorView()
+
     }
-    
-    private func handleResult(_ detailModel: DetailViewModelType) {
-        
-        startActivityIndicatorView()
-        
-        detailModel.setRecipeAttributes { [weak self] error in
-            
-            if let error = error {
-                
-                let alert = AlertService.alert(message: error.localizedDescription)
-                self?.present(alert, animated: true)
-                
-                return
-            }
-                        
-            self?.name.text = detailModel.name
-            self?.difficulty.text = detailModel.difficulty
-            self?.descriptionText.text = detailModel.description
-            self?.instructionLabel.text = "Instruction: \n"
-            self?.instructionText.text = detailModel.instruction
-            self?.similarLabel.text = detailModel.hasSimilarRecipes ? "SIMILAR RECIPE:" : ""
-            
-            self?.collectionView.dataSource = self
-            self?.buttonFieldView.dataSource = self
-            
-            self?.buttonFieldView.reloadData()
-            self?.collectionView.reloadData()
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.setScrollConstraints()
-                self?.stopActivityIndicatorView()
-            }
-        }
-    }
+	
+	private func bindToDetailModel() {
+		self.detailModel.didUpdateData = { [weak self]  in
+			self?.detailModelDidUpdate()
+		}
+		self.detailModel.didReceiveError = { [weak self] error in
+			self?.detailModelDidError(error)
+			return
+		}
+	}
+	
+	private func detailModelDidError(_ error: Error) {
+		let alert = AlertService.alert(message: error.localizedDescription)
+		present(alert, animated: true)
+	}
+	
+	private func detailModelDidUpdate() {
+		name.text = detailModel.name
+		difficulty.text = detailModel.difficulty
+		descriptionText.text = detailModel.description
+		instructionLabel.text = "Instruction: \n"
+		instructionText.text = detailModel.instruction
+		similarLabel.text = detailModel.hasSimilarRecipes ? "SIMILAR RECIPE:" : ""
+		
+		collectionView.dataSource = self
+		buttonFieldView.dataSource = self
+		
+		buttonFieldView.reloadData()
+		collectionView.reloadData()
+		
+		DispatchQueue.main.async { [weak self] in
+			self?.setScrollConstraints()
+			self?.stopActivityIndicatorView()
+		}
+	}
     
     // MARK: - UI Elements
     
@@ -216,10 +216,9 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier,
                                                       for: indexPath) as? CollectionViewCell
         
-        guard let collectionCell = cell,
-              let images = detailModel.images else { return UICollectionViewCell() }
+        guard let collectionCell = cell else { return UICollectionViewCell() }
         
-        let cellViewModel = detailModel.collectionCellViewModel(for: images[indexPath.row])
+		let cellViewModel = detailModel.collectionCellViewModel(for: detailModel.images[indexPath.row])
         collectionCell.cellModel = cellViewModel
         
         return collectionCell

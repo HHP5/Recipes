@@ -21,12 +21,15 @@ class DetailViewModel: DetailViewModelType {
     var difficulty: String?
     var description: String = ""
     var instruction: String?
-    var images: [String]?
-    var similarRecipes: [SimilarRecipes]?
+    var images: [String] = []
+    var similarRecipes: [SimilarRecipes] = []
     var hasSimilarRecipes: Bool = false
 
-    func setRecipeAttributes(completion: @escaping (Error?) -> Void) {
-
+	var didUpdateData: (() -> Void)?
+	
+	var didReceiveError: ((Error) -> Void)?
+	
+    func fetcingRecipe() {
         ServiceLayer.request(router: Router.recipe(uuid: uuid)) { [weak self] (result: Result<RecipeResponse, Error>) in
 
             switch result {
@@ -35,32 +38,27 @@ class DetailViewModel: DetailViewModelType {
 
                 self?.handleResult(of: response.recipe)
 
-                completion(nil)
+				self?.didUpdateData?()
 
             case .failure(let error):
                 
-                completion(error)
+				self?.didReceiveError?(error)
                 
             }
         }
     }
 
     func similarRecipePressed(for index: Int) -> DetailViewModelType? {
-
-        guard let recipe = similarRecipes?[index] else { return nil}
-        return DetailViewModel(uuid: recipe.uuid)
+        return DetailViewModel(uuid: similarRecipes[index].uuid)
     }
 
     // Передает массив изображений (для ведения подсчета) и изображение для отображения
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType? {
-        guard let images = images else { return nil }
         return CollectionCellModel(imageURL: currentImage, images: images)
     }
 
     func tableCellModel(for index: Int) -> ButtonCellModelType? {
-
-        guard let similarRecipe = similarRecipes else { return nil }
-        let nameSimilarRecipe = similarRecipe[index].name
+        let nameSimilarRecipe = similarRecipes[index].name
 
         return ButtonCellModel(title: nameSimilarRecipe)
     }
@@ -76,7 +74,6 @@ class DetailViewModel: DetailViewModelType {
         handleImages(for: recipe.images)
         handleSimilar(for: recipe.similar)
         handleDifficutly(for: recipe.difficulty)
-
     }
 
     private func handleDifficutly(for difficulty: Int) {
@@ -90,7 +87,6 @@ class DetailViewModel: DetailViewModelType {
     }
 
     private func handleSimilar(for similar: [SimilarRecipes]?) {
-
         guard let similar = similar else { return }
 
         self.similarRecipes = similar
@@ -102,7 +98,6 @@ class DetailViewModel: DetailViewModelType {
     }
 
     private func handleDescription(for description: String?) {
-
         guard let description = description else { return }
 
         if !description.isEmpty {
@@ -111,7 +106,6 @@ class DetailViewModel: DetailViewModelType {
     }
 
     private func handleImages(for images: [String]) {
-
         self.images = images
         self.numberOfImages = images.count
     }

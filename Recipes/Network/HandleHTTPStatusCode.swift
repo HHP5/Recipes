@@ -8,10 +8,6 @@
 import Foundation
 
 extension HTTPURLResponse {
-    var hasSuccessStatusCode: Bool {
-        return 200...299 ~= statusCode
-    }
-    
     func handleHTTPStatusCode() -> NetworkError {
         switch  statusCode {
         case 300...399:

@@ -18,18 +18,22 @@ protocol DetailViewModelType: class {
     
     var instruction: String? {get}
     
-    var images: [String]? {get}
+    var images: [String] {get}
             
     var numberOfButtons: Int? {get set}
         
     var hasSimilarRecipes: Bool {get}
         
-    func setRecipeAttributes(completion: @escaping (Error?) -> Void)
+    func fetcingRecipe()
 
     func similarRecipePressed(for index: Int) -> DetailViewModelType?
     
     func collectionCellViewModel(for currentImage: String) -> CollectionCellModelType?
     
     func tableCellModel(for index: Int) -> ButtonCellModelType?
+	
+	var didUpdateData: (() -> Void)? {get set}
+	
+	var didReceiveError: ((Error) -> Void)? {get set}
 
 }

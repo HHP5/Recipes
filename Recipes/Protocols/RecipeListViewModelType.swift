@@ -13,7 +13,7 @@ protocol RecipeListViewModelType {
     
     var recipes: [Recipe] {get set}
 
-    func sortArray(by attribute: RecipesSortedBy)
+    func sortArray(by attribute: RecipesSortedType)
 
     func searchBarSearchButtonClicked(for searchText: String)
     
@@ -23,14 +23,14 @@ protocol RecipeListViewModelType {
     
     func didSelectRow(at index: Int) -> DetailViewModelType
 
-    func fetchingData()
+    func fetchingRecipes()
 
-    var didStartRequest: (() -> Void)? {get}
+    var didStartRequest: (() -> Void)? {get set}
     
-    var didFinishRequest: (() -> Void)? {get}
+    var didFinishRequest: (() -> Void)? {get set}
     
-    var didUpdateData: (() -> Void)? {get}
+    var didUpdateData: (() -> Void)? {get set}
     
-    var didReceiveError: ((Error) -> Void)? {get}
+    var didReceiveError: ((Error) -> Void)? {get set}
 
 }

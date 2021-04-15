@@ -18,8 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.overrideUserInterfaceStyle = .light
 
         window?.makeKeyAndVisible()
-        
-        let navBar = UINavigationController(rootViewController: RecipeListViewController())
+	
+        let navBar = UINavigationController(rootViewController: RecipeListViewController(viewModel: RecipeListViewModel()))
         window?.rootViewController = navBar
         
     }
