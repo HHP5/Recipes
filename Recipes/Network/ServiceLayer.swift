@@ -8,7 +8,7 @@
 import Foundation
 
 class ServiceLayer {
-    class func request<T: Codable>(router: Router, completion: @escaping (Result<T, Error>) -> Void) {
+     func request<T: Codable>(router: Router, completion: @escaping (Result<T, Error>) -> Void) {
         var components = URLComponents()
         
         components.scheme = router.scheme
@@ -24,7 +24,7 @@ class ServiceLayer {
         urlRequest.httpMethod = router.method
         
         let session = URLSession(configuration: .default)
-        let dataTask = session.dataTask(with: urlRequest) { data, response, error in
+		let dataTask = session.dataTask(with: urlRequest) { [self] data, response, error in
             
             if let error = error {
                 completion(.failure(error))
@@ -35,25 +35,13 @@ class ServiceLayer {
 				switch result.statusCode {
 				
 				case 200...299:
-					
-					guard let data = data else {
+										
+					DispatchQueue.main.async {
 						
-						completion(.failure(NetworkError.noData))
-						return
+						completion(handleData(T.self, data: data))
+						
 					}
-					
-					do {
-						
-						let responseObject = try JSONDecoder().decode(T.self, from: data)
-						
-						DispatchQueue.main.async {completion(.success(responseObject))}
-						
-					} catch {
-						
-						completion(.failure(NetworkError.dataDecodingError))
-						return
-					}
-					
+
 				default:
 					
 					completion(.failure(result.handleHTTPStatusCode()))
@@ -64,4 +52,19 @@ class ServiceLayer {
         }
         dataTask.resume()
     }
+	
+	private func handleData<T: Codable>(_ type: T.Type, data: Data?) -> Result<T, Error> {
+		guard let data = data else { return .failure(NetworkError.noData) }
+		
+		do {
+			
+			let responseObject = try JSONDecoder().decode(type, from: data)
+			
+			return .success(responseObject)
+			
+		} catch {
+			
+			return .failure(NetworkError.dataDecodingError)
+		}
+	}
 }

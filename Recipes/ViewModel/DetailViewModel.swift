@@ -12,6 +12,7 @@ class DetailViewModel: DetailViewModelType {
     init(uuid: String) {
         self.uuid = uuid
     }
+	private var serviceLayer = ServiceLayer()
 
     var uuid: String
     var numberOfButtons: Int?
@@ -30,7 +31,7 @@ class DetailViewModel: DetailViewModelType {
 	var didReceiveError: ((Error) -> Void)?
 	
     func fetcingRecipe() {
-        ServiceLayer.request(router: Router.recipe(uuid: uuid)) { [weak self] (result: Result<RecipeResponse, Error>) in
+        serviceLayer.request(router: Router.recipe(uuid: uuid)) { [weak self] (result: Result<RecipeResponse, Error>) in
 
             switch result {
 
